@@ -164,6 +164,51 @@ export default function ArticleClient({
           </div>
 
           <aside className="sticky top-29 flex min-w-0 flex-[1_1_280px] flex-col gap-6.5">
+            {related.length > 0 && (
+              <section className="border border-line p-5">
+                <h2 className="m-0 mb-3 font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-teal">
+                  {t.related}
+                </h2>
+                <div className="flex flex-col">
+                  {related.map((r) => {
+                    const rCats = categories.filter((c) => r.categories.includes(c.slug));
+                    return (
+                      <Link
+                        key={r.slug}
+                        href={`/articles/${r.slug}`}
+                        className="group flex gap-3 border-t border-line-soft py-3 first:border-t-0 first:pt-0"
+                      >
+                        <Thumb
+                          src={r.thumbnail_url}
+                          alt=""
+                          widthClass="w-16"
+                          heightClass="h-16"
+                          sizes="64px"
+                          fallbackLabel=""
+                        />
+                        <div className="min-w-0">
+                          <span className="block font-mono text-[9.5px] uppercase tracking-[0.1em] text-teal">
+                            {rCats[0] ? pick(rCats[0].name, rCats[0].name_ur) : ""}
+                          </span>
+                          <span
+                            className={
+                              isUr
+                                ? "mt-1 block font-urdu text-[14px] leading-[1.7] text-navy"
+                                : "mt-1 line-clamp-2 block font-serif text-[13.5px] leading-[1.3] text-navy"
+                            }
+                          >
+                            {pick(r.title, r.title_ur)}
+                          </span>
+                          <span className="mt-1 block font-mono text-[9.5px] text-muted">
+                            {formatDate(r.item_date, isUr ? "ur" : "en")}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
             <section className="border border-line p-5">
               <h2 className="m-0 mb-3 font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-teal">
                 {t.metadata}
@@ -189,36 +234,6 @@ export default function ArticleClient({
             </section>
           </aside>
         </div>
-
-        {related.length > 0 && (
-          <section aria-label="Related" className="mt-15">
-            <h2 className="m-0 mb-5.5 border-b border-navy pb-2.5 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">
-              {t.related}
-            </h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((r) => {
-                const rCats = categories.filter((c) => r.categories.includes(c.slug));
-                return (
-                  <Link
-                    key={r.slug}
-                    href={`/articles/${r.slug}`}
-                    className="flex flex-col border-t-2 border-navy pt-3.5 transition-colors duration-150 hover:border-cyan"
-                  >
-                    <span className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-teal">
-                      {rCats[0] ? pick(rCats[0].name, rCats[0].name_ur) : ""}
-                    </span>
-                    <span className={isUr ? "mt-2 block font-urdu text-[17px] leading-[2.1] text-navy" : "mt-2 block font-serif text-[18px] leading-[1.25] text-navy"}>
-                      {pick(r.title, r.title_ur)}
-                    </span>
-                    <span className="mt-2.5 block font-mono text-[10.5px] text-muted">
-                      {formatDate(r.item_date, isUr ? "ur" : "en")}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        )}
       </article>
     </div>
   );
