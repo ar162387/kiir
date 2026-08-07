@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/*
+ * KIIR design tokens — lifted directly from the Claude Design mockup
+ * ("KIIR Site.dc.html"). Keep these in sync with that file if the
+ * mockup changes; do not invent new colors ad hoc in components.
+ */
+@theme inline {
+  --color-navy: #0b2b38;      /* primary dark — header bg, footer, buttons */
+  --color-navy-ink: #0f1f27;  /* body text */
+  --color-cyan: #0fafcf;      /* accent — active states, links on dark */
+  --color-teal: #0b7e97;      /* accent — kicker labels, category tags */
+  --color-canvas: #f7fafb;        /* page background */
+  --color-surface: #ffffff;   /* card background */
+  --color-tint: #edf3f5;      /* section tint (programs, sidebar cards) */
+  --color-thumb: #e9f1f4;     /* thumbnail placeholder fill */
+  --color-line: #dce4e8;      /* primary hairline border */
+  --color-line-soft: #e7eef1; /* secondary hairline border */
+  --color-slate: #556a72;     /* secondary body text */
+  --color-muted: #83959e;     /* tertiary / metadata text */
+  --color-muted-2: #64798e;   /* thumbnail fallback label */
+
+  --font-sans: var(--font-plex-sans), system-ui, sans-serif;
+  --font-serif: var(--font-source-serif), Georgia, serif;
+  --font-mono: var(--font-plex-mono), monospace;
+  --font-urdu: var(--font-nastaliq), var(--font-source-serif), serif;
+}
+
+@keyframes kiirFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes kiirMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes kiirDrop {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes kiirHeroA {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes kiirHeroImg {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: none; }
+}
+
+/*
+ * IMPORTANT: these resets must live in `@layer base`. Tailwind's own output
+ * is wrapped in `@layer theme, base, components, utilities`, and per the CSS
+ * cascade-layers spec, ANY unlayered rule beats ALL layered rules regardless
+ * of specificity. Left unlayered, a plain `a { color }` here would silently
+ * win over every `.text-*` utility applied to a link — which is exactly the
+ * bug that shipped first (invisible button/link text) until this was fixed.
+ */
+@layer base {
+  * , *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-navy-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-wrap: pretty;
+  }
+  a { color: var(--color-navy); text-decoration: none; }
+  a:hover { color: var(--color-teal); }
+  button { font: inherit; color: inherit; }
+  input, textarea, select { font: inherit; }
+  ::selection { background: #c7edf6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus visibility — keyboard users only, matches KIIR cyan accent */
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+/* Article body — rich text rendered from content_items.body / body_ur */
+.article-body p {
+  margin: 0 0 18px;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.72;
+  color: #213038;
+}
+.article-body blockquote {
+  margin: 30px 0;
+  padding: 4px 0 4px 20px;
+  border-left: 2px solid var(--color-cyan);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 21px;
+  line-height: 1.5;
+  color: var(--color-navy);
+}
+.article-body a { text-decoration: underline; text-underline-offset: 2px; }
+.article-body img { max-width: 100%; height: auto; margin: 18px 0; }
+.article-body h2, .article-body h3 { font-family: var(--font-serif); color: var(--color-navy); margin: 28px 0 12px; }
+.article-body ol, .article-body ul { margin: 0 0 18px; padding-inline-start: 22px; color: #213038; }
+
+.article-body--ur p {
+  font-family: var(--font-urdu);
+  font-size: 19px;
+  line-height: 2.4;
+}
+.article-body--ur blockquote {
+  border-left: none;
+  border-right: 2px solid var(--color-cyan);
+  padding: 4px 20px 4px 0;
+  font-family: var(--font-urdu);
+  font-style: normal;
+  font-size: 19px;
+  line-height: 2.4;
+}

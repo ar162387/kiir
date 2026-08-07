@@ -1,0 +1,103 @@
+import type { Lang } from "@/lib/types";
+
+// UI chrome strings — content copy (titles/descriptions) lives on each
+// record's *_ur column instead, per lib/types.ts ContentItem/Program.
+
+export const UI = {
+  en: {
+    search: "Search content…",
+    getInvolved: "Get Involved",
+    ticker: "Latest news",
+    featured: "Featured",
+    curated: "curated items",
+    latest: "Latest",
+    loadMore: "Load more",
+    upcoming: "Upcoming Events",
+    recentPubs: "Recent Publications",
+    giBody: "Volunteer with a program, propose a research collaboration, or join our mailing list for briefings and event invitations.",
+    contactBtn: "Contact KIIR",
+    subscribe: "Subscribe to briefings",
+    ourPrograms: "Our Programs",
+    programsHeadline: "Seven areas of sustained work",
+    programsIntro: "Every activity, event and publication is tagged to one or more programs, so each listing below is a live view of the archive.",
+    items: "items",
+    filter: "Filter",
+    allTypes: "All types",
+    tagged: "tagged items",
+    activities: "activities",
+    events: "events",
+    publications: "publications",
+    related: "Related items",
+    metadata: "Item metadata",
+    readIn: "Read in",
+    share: "Share",
+    supportTitle: "Support this work",
+    supportBody: "KIIR briefings are free to read and republish with attribution.",
+    supportBtn: "Get in touch",
+    quickLinks: "Quick links",
+    programsCol: "Programs",
+    contactCol: "Contact",
+    home: "Home",
+    about: "About Us",
+    activitiesNav: "Activities",
+    eventsNav: "Events",
+    news: "News & Publications",
+    contact: "Contact",
+    all: "All",
+    showing: (n: number, total: number) => `Showing ${n} of ${total}`,
+    pageOf: (n: number, total: number) => `Page ${n} of ${total}`,
+  },
+  ur: {
+    search: "مواد تلاش کریں…",
+    getInvolved: "شامل ہوں",
+    ticker: "تازہ خبر",
+    featured: "نمایاں",
+    curated: "منتخب آئٹمز",
+    latest: "تازہ ترین",
+    loadMore: "مزید دیکھیں",
+    upcoming: "آنے والی تقریبات",
+    recentPubs: "حالیہ اشاعتیں",
+    giBody: "کسی پروگرام میں رضاکارانہ خدمات دیں، تحقیقی اشتراک کی تجویز دیں، یا بریفنگ اور تقریبات کی دعوت کے لیے ہماری فہرست میں شامل ہوں۔",
+    contactBtn: "کے آئی آئی آر سے رابطہ",
+    subscribe: "بریفنگ حاصل کریں",
+    ourPrograms: "ہمارے پروگرام",
+    programsHeadline: "مسلسل کام کے سات شعبے",
+    programsIntro: "ہر سرگرمی، تقریب اور اشاعت ایک یا زیادہ پروگراموں سے منسلک ہے، اس لیے نیچے دی گئی ہر فہرست آرکائیو کا زندہ منظر ہے۔",
+    items: "آئٹمز",
+    filter: "فلٹر",
+    allTypes: "تمام اقسام",
+    tagged: "منسلک آئٹمز",
+    activities: "سرگرمیاں",
+    events: "تقریبات",
+    publications: "اشاعتیں",
+    related: "متعلقہ آئٹمز",
+    metadata: "آئٹم کی تفصیلات",
+    readIn: "زبان",
+    share: "شیئر کریں",
+    supportTitle: "اس کام کی حمایت کریں",
+    supportBody: "کے آئی آئی آر کی بریفنگز مفت پڑھی اور حوالہ کے ساتھ شائع کی جا سکتی ہیں۔",
+    supportBtn: "رابطہ کریں",
+    quickLinks: "فوری روابط",
+    programsCol: "پروگرام",
+    contactCol: "رابطہ",
+    home: "ہوم",
+    about: "ہمارے بارے میں",
+    activitiesNav: "سرگرمیاں",
+    eventsNav: "تقریبات",
+    news: "خبریں و اشاعتیں",
+    contact: "رابطہ",
+    all: "تمام",
+    showing: (n: number, total: number) => `${n} / ${total} دکھائے گئے`,
+    pageOf: (n: number, total: number) => `صفحہ ${n} از ${total}`,
+  },
+} as const;
+
+export function t(lang: Lang) {
+  return UI[lang];
+}
+
+/** Pick the language-appropriate string, falling back to English if the Urdu field is empty. */
+export function pick(en: string | null | undefined, ur: string | null | undefined, lang: Lang): string {
+  if (lang === "ur" && ur && ur.trim()) return ur;
+  return en ?? "";
+}
