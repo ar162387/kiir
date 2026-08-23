@@ -11,7 +11,7 @@ export default function PrivacyPage() {
         Privacy Policy
       </h1>
       <p className="mt-5 text-[15px] leading-relaxed text-slate">
-        KIIR's formal privacy policy is being finalized alongside this new site. In the meantime: the
+        KIIR&apos;s formal privacy policy is being finalized alongside this new site. In the meantime: the
         contact form on this site stores only what you submit (name, email, subject, message) to respond
         to your enquiry, and is not shared with third parties. This site does not use third-party
         advertising trackers.

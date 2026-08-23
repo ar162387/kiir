@@ -2,6 +2,7 @@
 // keep the two in sync; this is the schema's TypeScript face, not a separate model.
 
 export type ContentType = "activity" | "event" | "news_publication" | "publication" | "page";
+export type PublicationKind = "opinion-articles" | "research-papers" | "short-stories" | "newsletters";
 
 export type Lang = "en" | "ur";
 
@@ -31,14 +32,15 @@ export interface ContentItem {
   priority: number;
   is_featured: boolean;
   thumbnail_url: string | null;
+  publication_kind?: PublicationKind | null;
   categories: string[]; // program slugs
 }
 
 export interface SocialSettings {
   x: string;
   facebook: string;
+  instagram?: string;
   linkedin: string;
-  youtube: string;
 }
 
 export interface OrgSettings {

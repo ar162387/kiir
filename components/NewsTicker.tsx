@@ -18,7 +18,8 @@ export default function NewsTicker({ items }: { items: TickerItem[] }) {
       role="region"
       aria-label="News ticker"
       aria-live="polite"
-      className="border-b border-white/10 bg-navy shadow-[0_6px_18px_-14px_rgba(11,43,56,0.6)]"
+      className="border-b border-white/10 shadow-[0_6px_18px_-14px_rgba(69,17,27,0.6)]"
+      style={{ backgroundColor: "#6f1d2b" }}
     >
       <div className={`mx-auto flex max-w-[1520px] items-center gap-4.5 px-4 sm:px-6 ${isUr ? "h-13" : "h-[42px]"}`}>
         <span className="hidden flex-none items-center gap-2 bg-cyan px-2.5 py-[5px] font-mono text-[10px] uppercase tracking-[0.14em] text-[#05202B] sm:flex">

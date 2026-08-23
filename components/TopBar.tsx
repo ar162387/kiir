@@ -1,35 +1,38 @@
 "use client";
 
 import { useLanguage } from "@/components/LanguageProvider";
-import { SearchIcon } from "@/components/icons";
-import type { OrgSettings } from "@/lib/types";
+import { FacebookIcon, InstagramIcon, LinkedInIcon, XIcon } from "@/components/icons";
+import type { ContactSettings, SocialSettings } from "@/lib/types";
 
-export default function TopBar({ org }: { org: OrgSettings }) {
-  const { lang, setLang, isUr, pick, t } = useLanguage();
+export default function TopBar({ contact, social }: { contact: ContactSettings; social: SocialSettings }) {
+  const { lang, setLang } = useLanguage();
+  const socialLinks = [
+    { label: "Facebook", href: social.facebook, Icon: FacebookIcon, className: "bg-[#1877F2]" },
+    { label: "Instagram", href: social.instagram, Icon: InstagramIcon, className: "bg-[#D62976]" },
+    { label: "X", href: social.x, Icon: XIcon, className: "bg-black" },
+    { label: "LinkedIn", href: social.linkedin, Icon: LinkedInIcon, className: "bg-[#0A66C2]" },
+  ];
 
   return (
     <div className="bg-navy text-[#C6D2E0]">
       <div className="mx-auto flex min-h-10 max-w-[1520px] flex-wrap items-center justify-between gap-4 px-4 sm:px-6">
-        <div
-          className={
-            isUr
-              ? "py-2 font-urdu text-[13px] leading-relaxed"
-              : "py-2 font-mono text-[11px] uppercase tracking-[0.08em]"
-          }
-        >
-          {pick(org.strapline, org.strapline_ur)}
+        <div className="flex items-center gap-2 py-2">
+          {socialLinks.map(({ label, href, Icon, className }) =>
+            href ? (
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className={`grid h-6 w-6 place-items-center rounded-full text-white ${className}`}>
+                <Icon size={12} />
+              </a>
+            ) : (
+              <span key={label} aria-label={`${label} link pending`} className={`grid h-6 w-6 place-items-center rounded-full text-white ${className}`}>
+                <Icon size={12} />
+              </span>
+            )
+          )}
+          <a href={`tel:${contact.phone.replace(/\s+/g, "")}`} className="ml-2 font-mono text-[12px] font-semibold tracking-[0.06em] text-white hover:text-cyan">
+            {contact.phone}
+          </a>
         </div>
         <div className="flex items-center gap-3.5 py-1.5">
-          <label className="flex min-w-[160px] items-center gap-2 border border-white/15 bg-white/[0.07] px-2.5 py-[5px] sm:min-w-[190px]">
-            <SearchIcon className="flex-none text-[#8FA3B8]" />
-            <span className="sr-only">{t.search}</span>
-            <input
-              type="search"
-              placeholder={t.search}
-              aria-label={t.search}
-              className="w-full min-w-0 bg-transparent text-[12.5px] text-[#F2F4F7] placeholder:text-[#8FA3B8] outline-none"
-            />
-          </label>
           <div role="group" aria-label="Language" className="flex border border-white/[0.18]">
             <button
               type="button"

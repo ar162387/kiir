@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AboutClient from "@/components/about/AboutClient";
-import { getAboutSettings, getOrgSettings, getPrograms } from "@/lib/queries";
+import { getOrgSettings, getPrograms } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -8,6 +8,6 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [org, about, programs] = await Promise.all([getOrgSettings(), getAboutSettings(), getPrograms()]);
-  return <AboutClient org={org} about={about} programs={programs} />;
+  const [org, programs] = await Promise.all([getOrgSettings(), getPrograms()]);
+  return <AboutClient org={org} programs={programs} />;
 }

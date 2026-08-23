@@ -5,7 +5,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import Thumb from "@/components/Thumb";
 import { formatDate } from "@/lib/format";
 import { TYPE_LABEL } from "@/lib/types";
-import type { ContentItem, Program } from "@/lib/types";
+import type { ContentItem } from "@/lib/types";
 
 export default function ArchiveClient({
   basePath,
@@ -17,8 +17,10 @@ export default function ArchiveClient({
   total,
   page,
   pageCount,
-  programs,
   categoryFilter,
+  publicationKind = "all",
+  dateFilter = "",
+  showPublicationFilters = false,
 }: {
   basePath: string;
   titleEn: string;
@@ -29,15 +31,25 @@ export default function ArchiveClient({
   total: number;
   page: number;
   pageCount: number;
-  programs: Program[];
   categoryFilter: string | "all";
+  publicationKind?: string | "all";
+  dateFilter?: string;
+  showPublicationFilters?: boolean;
 }) {
   const { t, isUr, pick } = useLanguage();
 
-  const catHref = (slug: string) => (slug === "all" ? basePath : `${basePath}?category=${slug}`);
+  const archiveHref = (kind: string, date: string) => {
+    const params = new URLSearchParams();
+    if (kind !== "all") params.set("kind", kind);
+    if (date) params.set("date", date);
+    const query = params.toString();
+    return `${basePath}${query ? `?${query}` : ""}`;
+  };
   const pageHref = (n: number) => {
     const params = new URLSearchParams();
     if (categoryFilter !== "all") params.set("category", categoryFilter);
+    if (publicationKind !== "all") params.set("kind", publicationKind);
+    if (dateFilter) params.set("date", dateFilter);
     if (n > 1) params.set("page", String(n));
     const qs = params.toString();
     return `${basePath}${qs ? `?${qs}` : ""}`;
@@ -57,31 +69,17 @@ export default function ArchiveClient({
       </section>
 
       <div className="mx-auto max-w-[1520px] px-4 py-7.5 pb-16 sm:px-6">
-        <div role="group" aria-label="Filter by program" className="flex flex-wrap items-center gap-2 border-b border-line pb-5.5">
-          <Link
-            href={catHref("all")}
-            className={`cursor-pointer border px-3.5 py-2 font-mono text-[10.5px] uppercase tracking-[0.08em] transition-colors duration-150 ${
-              categoryFilter === "all" ? "border-navy bg-navy text-canvas" : "border-line bg-transparent text-slate hover:border-navy/40"
-            }`}
-          >
-            {t.all}
-          </Link>
-          {programs.map((p) => (
-            <Link
-              key={p.slug}
-              href={catHref(p.slug)}
-              className={`cursor-pointer border px-3.5 py-2 font-mono text-[10.5px] uppercase tracking-[0.08em] transition-colors duration-150 ${
-                isUr ? "font-urdu normal-case tracking-normal" : ""
-              } ${categoryFilter === p.slug ? "border-navy bg-navy text-canvas" : "border-line bg-transparent text-slate hover:border-navy/40"}`}
-            >
-              {pick(p.name, p.name_ur)}
-            </Link>
-          ))}
-          <span className="flex-1" />
-          <span className="font-mono text-[10.5px] text-muted">
-            {total} {t.items}
-          </span>
-        </div>
+        {showPublicationFilters ? <div className="flex flex-wrap items-center gap-3 border-b border-line pb-5.5">
+          <label className="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal">Publication type
+            <select value={publicationKind} onChange={(event) => { window.location.href = archiveHref(event.target.value, dateFilter); }} className="ml-2 border border-line bg-surface px-3 py-2 font-sans text-[14px] normal-case tracking-normal text-navy">
+              <option value="all">All publications</option><option value="opinion-articles">Opinion Articles</option><option value="research-papers">Research Papers</option><option value="short-stories">Short Stories</option><option value="newsletters">Newsletters</option>
+            </select>
+          </label>
+          <label className="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal">Date
+            <input type="date" value={dateFilter} onChange={(event) => { window.location.href = archiveHref(publicationKind, event.target.value); }} className="ml-2 border border-line bg-surface px-3 py-2 font-sans text-[14px] normal-case tracking-normal text-navy" aria-label="Filter publications by date" />
+          </label>
+          <span className="flex-1" /><span className="font-mono text-[10.5px] text-muted">{total} {t.items}</span>
+        </div> : <div className="flex justify-end border-b border-line pb-5.5"><span className="font-mono text-[10.5px] text-muted">{total} {t.items}</span></div>}
 
         {items.length === 0 ? (
           <p className="py-16 text-center text-sm text-muted">—</p>

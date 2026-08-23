@@ -8,12 +8,12 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteNav from "@/components/SiteNav";
 import NewsTicker from "@/components/NewsTicker";
 import SiteFooter from "@/components/SiteFooter";
-import { getContactSettings, getOrgSettings, getPrograms, getProgramCounts, getSocialSettings, getTicker } from "@/lib/queries";
+import { getContactSettings, getOrgSettings, getPrograms, getSocialSettings, getTicker } from "@/lib/queries";
 import type { Lang } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: {
-    default: "Kashmir Institute of International Relations (KIIR)",
+    default: "KASHMIR INSTITUTE OF INTERNATIONAL RELATIONS (KIIR)",
     template: "%s · KIIR",
   },
   description:
@@ -24,12 +24,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const cookieStore = await cookies();
   const lang: Lang = cookieStore.get("kiir-lang")?.value === "ur" ? "ur" : "en";
 
-  const [org, programs, ticker, contact, counts, social] = await Promise.all([
+  const [org, programs, ticker, contact, social] = await Promise.all([
     getOrgSettings(),
     getPrograms(),
     getTicker(),
     getContactSettings(),
-    getProgramCounts(),
     getSocialSettings(),
   ]);
 
@@ -43,10 +42,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Skip to main content
         </a>
         <LanguageProvider initialLang={lang}>
-          <TopBar org={org} />
+          <TopBar contact={contact} social={social} />
           <SiteHeader org={org} />
           <div className="sticky top-0 z-40">
-            <SiteNav programs={programs} counts={counts} />
+            <SiteNav programs={programs} />
             <NewsTicker items={ticker} />
           </div>
           <main id="main-content" className="flex-1">

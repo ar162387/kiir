@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import Thumb from "@/components/Thumb";
-import Chip from "@/components/Chip";
 import { ArrowRight, ChevronLeft, ChevronRight } from "@/components/icons";
 import { formatDate, formatMonthDay } from "@/lib/format";
 import { TYPE_LABEL } from "@/lib/types";
 import type { ContentItem, Program } from "@/lib/types";
 
 const HERO_INTERVAL = 6500;
-const FEED_PAGE = 8;
+const FEED_PAGE = 4;
 
 export default function HomeClient({
   featured,
@@ -30,7 +29,6 @@ export default function HomeClient({
 }) {
   const { t, isUr, pick } = useLanguage();
   const [heroIdx, setHeroIdx] = useState(0);
-  const [filter, setFilter] = useState<string>("all");
   const [visible, setVisible] = useState(FEED_PAGE);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -58,16 +56,7 @@ export default function HomeClient({
   };
 
   const lead = featured[heroIdx % len];
-  const rest = useMemo(() => {
-    if (!featured.length) return [];
-    return [...featured.slice((heroIdx % len) + 1), ...featured.slice(0, heroIdx % len)];
-  }, [featured, heroIdx, len]);
-
-  const filteredFeed = useMemo(
-    () => (filter === "all" ? feed : feed.filter((i) => i.categories.includes(filter))),
-    [feed, filter]
-  );
-  const shown = filteredFeed.slice(0, visible);
+  const shown = feed.slice(0, visible);
 
   return (
     <div>
@@ -85,7 +74,7 @@ export default function HomeClient({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-[1.75fr_1fr_1fr] lg:auto-rows-[minmax(178px,auto)]">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr]">
             {/* Lead */}
             <div className="relative col-span-full flex min-h-[300px] sm:min-h-[380px] lg:col-span-1 lg:col-start-1 lg:row-span-2">
               <Link
@@ -184,26 +173,17 @@ export default function HomeClient({
               )}
             </div>
 
-            {rest.slice(0, 4).map((f) => (
-              <Link
-                key={f.slug}
-                href={`/articles/${f.slug}`}
-                className="group relative flex flex-col overflow-hidden border border-line bg-surface transition-all duration-200 hover:-translate-y-1 hover:border-cyan hover:shadow-[0_12px_28px_-18px_rgba(16,36,59,0.45)]"
-              >
-                <Thumb src={f.thumbnail_url} alt="" heightClass="h-33" />
-                <span className="block px-4 pb-4.5 pt-3.5">
-                  <span className="block font-mono text-[9.5px] uppercase tracking-[0.1em] text-teal">
-                    {pick(...programLabel(programs, f.categories[0]))}
-                  </span>
-                  <span className={isUr ? "mt-2 block font-urdu text-[17px] leading-[2.1] text-navy" : "mt-2 block font-serif text-[17px] leading-[1.27] tracking-[-0.005em] text-navy"}>
-                    {pick(f.title, f.title_ur)}
-                  </span>
-                  <span className="mt-2.5 block font-mono text-[10.5px] text-muted">
-                    {formatDate(f.item_date, isUr ? "ur" : "en")}
-                  </span>
-                </span>
-              </Link>
-            ))}
+            <section aria-label="Upcoming" className="border border-line bg-surface p-5 sm:p-6">
+              <h2 className="m-0 mb-3 border-b border-navy pb-2.5 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">{t.upcoming}</h2>
+              {upcoming.length === 0 && <p className="py-3 text-sm text-muted">—</p>}
+              {upcoming.map((e) => {
+                const { mon, day } = formatMonthDay(e.item_date);
+                return <Link key={e.slug} href={`/articles/${e.slug}`} className="flex items-start gap-3.5 border-b border-line py-4 transition-colors hover:bg-tint">
+                  <span className="w-11.5 flex-none border border-cyan py-1.5 text-center"><span className="block font-mono text-[9px] uppercase tracking-[0.1em] text-teal">{mon}</span><span className="block font-serif text-[19px] leading-tight text-navy">{day}</span></span>
+                  <span className={isUr ? "font-urdu text-[16px] leading-[2] text-navy" : "font-serif text-[17px] leading-tight text-navy"}>{pick(e.title, e.title_ur)}</span>
+                </Link>;
+              })}
+            </section>
           </div>
         </section>
       )}
@@ -217,22 +197,7 @@ export default function HomeClient({
             <h2 className="m-0 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">
               {t.latest}
             </h2>
-            <span className="font-mono text-[11px] text-muted">{t.showing(shown.length, filteredFeed.length)}</span>
-          </div>
-          <div role="group" aria-label="Filter by program" className="flex flex-wrap gap-2 py-4 pb-5.5">
-            <Chip active={filter === "all"} onClick={() => { setFilter("all"); setVisible(FEED_PAGE); }}>
-              {t.all}
-            </Chip>
-            {programs.map((p) => (
-              <Chip
-                key={p.slug}
-                active={filter === p.slug}
-                isUr={isUr}
-                onClick={() => { setFilter(p.slug); setVisible(FEED_PAGE); }}
-              >
-                {pick(p.name, p.name_ur)}
-              </Chip>
-            ))}
+            <span className="font-mono text-[11px] text-muted">{t.showing(shown.length, feed.length)}</span>
           </div>
           <div className="flex flex-col">
             {shown.map((it) => (
@@ -272,7 +237,7 @@ export default function HomeClient({
               </Link>
             ))}
           </div>
-          {visible < filteredFeed.length && (
+          {visible < feed.length && (
             <button
               type="button"
               onClick={() => setVisible((v) => v + FEED_PAGE)}
@@ -284,36 +249,6 @@ export default function HomeClient({
         </section>
 
         <aside aria-label="Secondary" className="sticky top-29 flex min-w-0 flex-[1_1_300px] flex-col gap-7.5">
-          <section>
-            <h2 className="m-0 mb-3 border-b border-navy pb-2.5 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">
-              {t.upcoming}
-            </h2>
-            {upcoming.length === 0 && <p className="py-3 text-sm text-muted">—</p>}
-            {upcoming.map((e) => {
-              const { mon, day } = formatMonthDay(e.item_date);
-              return (
-                <Link
-                  key={e.slug}
-                  href={`/articles/${e.slug}`}
-                  className="flex items-start gap-3.5 border-b border-line py-3.5 transition-colors duration-150 hover:bg-tint"
-                >
-                  <span className="flex-none border border-cyan px-0 py-1.5 text-center w-11.5">
-                    <span className="block font-mono text-[9px] uppercase tracking-[0.1em] text-teal">{mon}</span>
-                    <span className="block font-serif text-[19px] leading-tight text-navy">{day}</span>
-                  </span>
-                  <span className="min-w-0">
-                    <span className={isUr ? "block font-urdu text-[15px] leading-[2] text-navy" : "block font-serif text-[15px] leading-tight text-navy"}>
-                      {pick(e.title, e.title_ur)}
-                    </span>
-                    <span className="mt-1.5 block font-mono text-[10px] text-muted">
-                      {pick(...programLabel(programs, e.categories[0]))}
-                    </span>
-                  </span>
-                </Link>
-              );
-            })}
-          </section>
-
           <section>
             <h2 className="m-0 mb-3 border-b border-navy pb-2.5 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">
               {t.recentPubs}
@@ -333,28 +268,6 @@ export default function HomeClient({
             ))}
           </section>
 
-          <section className="bg-navy p-6 text-[#E8EDF3]">
-            <h2 className={isUr ? "m-0 font-urdu text-[22px] leading-[2] text-white" : "m-0 font-serif text-[22px] leading-tight text-white"}>
-              {t.getInvolved}
-            </h2>
-            <p className={isUr ? "mt-3 font-urdu text-[13.5px] leading-[2.2] text-[#B9C7D6]" : "mt-3 text-[13.5px] leading-relaxed text-[#B9C7D6]"}>
-              {t.giBody}
-            </p>
-            <div className="mt-4.5 flex flex-col gap-2">
-              <Link
-                href="/contact"
-                className="bg-cyan px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-[filter] duration-150 hover:brightness-110"
-              >
-                {t.contactBtn}
-              </Link>
-              <Link
-                href="/contact"
-                className="border border-white/30 px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.12em] text-[#E8EDF3] transition-colors duration-150 hover:bg-white/[0.08]"
-              >
-                {t.subscribe}
-              </Link>
-            </div>
-          </section>
         </aside>
       </div>
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ArchiveClient from "@/components/archives/ArchiveClient";
-import { getItemsByType, getPrograms } from "@/lib/queries";
+import { getItemsByType } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -14,10 +14,7 @@ export default async function EventsPage({
 }) {
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
-  const [programs, result] = await Promise.all([
-    getPrograms(),
-    getItemsByType("event", { category: sp.category, page, pageSize: 9 }),
-  ]);
+  const result = await getItemsByType("event", { category: sp.category, page, pageSize: 9 });
 
   return (
     <ArchiveClient
@@ -30,7 +27,6 @@ export default async function EventsPage({
       total={result.total}
       page={result.page}
       pageCount={result.pageCount}
-      programs={programs}
       categoryFilter={sp.category ?? "all"}
     />
   );

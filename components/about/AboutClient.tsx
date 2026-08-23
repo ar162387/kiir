@@ -2,16 +2,14 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/components/LanguageProvider";
-import { Diamond } from "@/components/icons";
-import type { AboutSettings, OrgSettings, Program } from "@/lib/types";
+import { ArrowRight } from "@/components/icons";
+import type { OrgSettings, Program } from "@/lib/types";
 
 export default function AboutClient({
   org,
-  about,
   programs,
 }: {
   org: OrgSettings;
-  about: AboutSettings;
   programs: Program[];
 }) {
   const { t, isUr, pick } = useLanguage();
@@ -31,62 +29,33 @@ export default function AboutClient({
       </section>
 
       <section className="mx-auto max-w-[1520px] px-4 py-11 sm:px-6">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[2fr_1fr]">
-          <div>
-            <h2 className="m-0 mb-3.5 border-b border-navy pb-2.5 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">
-              {isUr ? "ہماری تاریخ" : "Our history"}
-            </h2>
-            <p className={isUr ? "font-urdu text-[15px] leading-[2.3] text-navy" : "font-serif text-[17px] leading-[1.72] text-navy"}>
-              {pick(about.history_en, about.history_ur)}
-            </p>
-          </div>
-          <div className="border border-line p-5.5">
-            <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-teal">
-              {isUr ? "قائم" : "Founded"}
-            </div>
-            <div className="mt-1.5 font-serif text-[32px] text-navy">{about.founded}</div>
-            <div className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.14em] text-teal">
-              {isUr ? "مقام" : "Headquarters"}
-            </div>
-            <div className={isUr ? "mt-1.5 font-urdu text-sm text-navy" : "mt-1.5 text-sm text-navy"}>
-              Islamabad, Pakistan
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-13">
-          <h2 className="m-0 mb-5.5 border-b border-navy pb-2.5 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">
-            {isUr ? "ہمارے اصول" : "How we work"}
-          </h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {about.principles.map((p) => (
-              <div key={p.title_en} className="border-t-2 border-cyan pt-4">
-                <h3 className={isUr ? "m-0 font-urdu text-[18px] text-navy" : "m-0 font-serif text-[19px] text-navy"}>
-                  {pick(p.title_en, p.title_ur)}
-                </h3>
-                <p className={isUr ? "mt-2.5 font-urdu text-[13px] leading-[2.2] text-slate" : "mt-2.5 text-[13.5px] leading-relaxed text-slate"}>
-                  {pick(p.body_en, p.body_ur)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-13">
+        <div>
           <h2 className="m-0 mb-5.5 border-b border-navy pb-2.5 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">
             {t.ourPrograms}
           </h2>
           <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
             {programs.map((p) => (
-              <Link key={p.slug} href={`/programs/${p.slug}`} className="flex flex-col gap-2 bg-canvas p-5.5 transition-colors duration-150 hover:bg-tint">
-                <Diamond size={9} className="text-cyan" />
-                <span className={isUr ? "font-urdu text-[16px] text-navy" : "font-serif text-[16px] text-navy"}>
+              <Link key={p.slug} href={`/programs/${p.slug}`} className="group flex min-h-47.5 flex-col gap-3 bg-canvas pb-6 transition-colors duration-200 hover:bg-surface">
+                <span className="block h-33 w-full overflow-hidden bg-thumb">
+                  <span aria-hidden className="block h-full w-full bg-cover bg-center transition-transform duration-300 ease-out group-hover:scale-110" style={p.image_url ? { backgroundImage: `url(\"${p.image_url}\")` } : undefined} />
+                </span>
+                <span className={isUr ? "block px-5.5 font-urdu text-[18px] leading-[2.1] text-navy" : "block px-5.5 font-serif text-[19px] leading-[1.22] text-navy"}>
                   {pick(p.name, p.name_ur)}
                 </span>
+                <span className={isUr ? "block px-5.5 font-urdu text-[12.5px] leading-[2.2] text-slate" : "block px-5.5 text-[13px] leading-relaxed text-slate"}>{pick(p.description, p.description_ur)}</span>
+                <span className="flex-1" />
+                <span className="mx-5.5 flex items-center justify-end border-t border-line-soft pt-3 text-teal"><ArrowRight /></span>
               </Link>
             ))}
           </div>
         </div>
+
+        <blockquote className="mt-13 border-l-4 border-cyan bg-tint px-6 py-7 sm:px-9">
+          <p className={isUr ? "m-0 font-urdu text-[20px] leading-[2.3] text-navy" : "m-0 max-w-[52ch] font-serif text-[24px] leading-[1.42] text-navy"}>
+            {isUr ? "امن کی پائیدار بنیاد باوقار مکالمے، تحقیق اور ان آوازوں کی نمائندگی میں ہے جنہیں طویل عرصے سے نظر انداز کیا گیا ہے۔" : "A durable peace begins with dignified dialogue, rigorous research and representation for the voices too long left outside the room."}
+          </p>
+          <footer className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-teal">{isUr ? "چیئرمین، کے آئی آئی آر" : "Chairman, KIIR"}</footer>
+        </blockquote>
       </section>
     </div>
   );

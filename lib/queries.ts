@@ -3,6 +3,24 @@ import { SEED_ABOUT, SEED_CONTACT, SEED_ITEMS, SEED_ORG, SEED_PROGRAMS, SEED_SOC
 import type { AboutSettings, ContactSettings, ContentItem, ContentType, OrgSettings, Program, SocialSettings, TickerItem } from "@/lib/types";
 import { PUBLIC_TYPES } from "@/lib/types";
 
+const ACTIVE_PROGRAMS = ["human-rights", "climate-action", "training", "international-advocacy"];
+const LEGACY_PROGRAM_MAP: Record<string, string> = {
+  "political-development": "international-advocacy",
+  "media-development": "training",
+  gender: "human-rights",
+  "capacity-building-idps": "training",
+  "disaster-risk-reduction": "climate-action",
+  "conflict-resolution": "international-advocacy",
+  "human-rights": "human-rights",
+};
+const PUBLICATION_KIND_BY_SLUG: Record<string, string> = {
+  "un-hrc-58-oral-statement": "opinion-articles",
+  "women-peace-committees-baseline": "research-papers",
+  "submission-cedaw-periodic-review": "research-papers",
+  "quarterly-detention-monitor-q2": "newsletters",
+  "oic-contact-group-briefing": "opinion-articles",
+};
+
 // ---------------------------------------------------------------------------
 // Every function here has two code paths: a Supabase query (used when
 // NEXT_PUBLIC_SUPABASE_URL / _ANON_KEY are set) and a read over the local
@@ -43,7 +61,8 @@ function mapRow(row: RawItemRow): ContentItem {
     thumbnail_url: row.thumbnail_url,
     categories: (row.content_item_categories ?? [])
       .map((c) => c.categories?.slug)
-      .filter((s): s is string => Boolean(s)),
+      .filter((s): s is string => Boolean(s))
+      .map((slug) => LEGACY_PROGRAM_MAP[slug] ?? slug),
   };
 }
 
@@ -87,10 +106,23 @@ export async function getTicker(): Promise<TickerItem[]> {
 
 export async function getPrograms(): Promise<Program[]> {
   const sb = getSupabase();
-  if (!sb) return [...SEED_PROGRAMS].sort((a, b) => a.sort_order - b.sort_order);
+  if (!sb) return localPrograms();
   const { data, error } = await sb.from("categories").select("*").order("sort_order", { ascending: true });
-  if (error || !data) return [...SEED_PROGRAMS].sort((a, b) => a.sort_order - b.sort_order);
-  return data as Program[];
+  if (error || !data) return localPrograms();
+  return (data as Program[]).filter((program) => ACTIVE_PROGRAMS.includes(program.slug));
+}
+
+function localPrograms(): Program[] {
+  const local = SEED_PROGRAMS
+    .filter((program) => ["human-rights", "disaster-risk-reduction", "media-development", "political-development"].includes(program.slug))
+    .map((program) => ({ ...program }));
+  const overrides: Record<string, Pick<Program, "slug" | "name" | "name_ur" | "description" | "description_ur" | "sort_order">> = {
+    "human-rights": { slug: "human-rights", name: "Human Rights", name_ur: "انسانی حقوق", description: "Monitoring, documentation and support for rights and dignity.", description_ur: "حقوق اور وقار کی نگرانی، دستاویز سازی اور معاونت۔", sort_order: 1 },
+    "disaster-risk-reduction": { slug: "climate-action", name: "Climate Action", name_ur: "موسمیاتی اقدام", description: "Community-led climate resilience and preparedness.", description_ur: "کمیونٹی کی قیادت میں موسمیاتی لچک اور تیاری۔", sort_order: 2 },
+    "media-development": { slug: "training", name: "Training", name_ur: "تربیت", description: "Practical learning for communities, journalists and civic leaders.", description_ur: "کمیونٹیز، صحافیوں اور شہری رہنماؤں کے لیے عملی تربیت۔", sort_order: 3 },
+    "political-development": { slug: "international-advocacy", name: "International Advocacy", name_ur: "بین الاقوامی وکالت", description: "Evidence-led engagement with international institutions.", description_ur: "بین الاقوامی اداروں کے ساتھ شواہد پر مبنی رابطہ۔", sort_order: 4 },
+  };
+  return local.map((program) => ({ ...program, ...overrides[program.slug] })).sort((a, b) => a.sort_order - b.sort_order);
 }
 
 export async function getProgramBySlug(slug: string): Promise<Program | null> {
@@ -100,7 +132,7 @@ export async function getProgramBySlug(slug: string): Promise<Program | null> {
 
 async function getAllItems(): Promise<ContentItem[]> {
   const sb = getSupabase();
-  if (!sb) return SEED_ITEMS;
+  if (!sb) return SEED_ITEMS.map((item) => ({ ...item, categories: item.categories.map((slug) => LEGACY_PROGRAM_MAP[slug] ?? slug) }));
   const { data, error } = await sb
     .from("content_items")
     .select(ITEM_SELECT)
@@ -165,12 +197,14 @@ export async function getItemsByProgram(
 
 export async function getItemsByType(
   type: ContentType | ContentType[],
-  opts: { category?: string; page?: number; pageSize?: number } = {}
+  opts: { category?: string; kind?: string; date?: string; page?: number; pageSize?: number } = {}
 ): Promise<{ items: ContentItem[]; total: number; page: number; pageCount: number }> {
   const types = Array.isArray(type) ? type : [type];
   const items = await getAllItems();
   let filtered = items.filter((i) => types.includes(i.type)).sort((a, b) => (a.item_date < b.item_date ? 1 : -1));
   if (opts.category) filtered = filtered.filter((i) => i.categories.includes(opts.category!));
+  if (opts.kind) filtered = filtered.filter((i) => PUBLICATION_KIND_BY_SLUG[i.slug] === opts.kind);
+  if (opts.date) filtered = filtered.filter((i) => i.item_date === opts.date);
   const pageSize = opts.pageSize ?? 9;
   const page = Math.max(1, opts.page ?? 1);
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));

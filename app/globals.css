@@ -7,6 +7,7 @@
  */
 @theme inline {
   --color-navy: #0b2b38;      /* primary dark — header bg, footer, buttons */
+  --color-maroon: #6f1d2b;    /* recent-news ticker */
   --color-navy-ink: #0f1f27;  /* body text */
   --color-cyan: #0fafcf;      /* accent — active states, links on dark */
   --color-teal: #0b7e97;      /* accent — kicker labels, category tags */
@@ -24,6 +25,8 @@
   --font-serif: var(--font-source-serif), Georgia, serif;
   --font-mono: var(--font-plex-mono), monospace;
   --font-urdu: var(--font-nastaliq), var(--font-source-serif), serif;
+  --font-display: "Arial Black", Arial, sans-serif;
+  --font-ui-size: 16px;
 }
 
 @keyframes kiirFade {
@@ -65,6 +68,7 @@
     background: var(--color-canvas);
     color: var(--color-navy-ink);
     font-family: var(--font-sans);
+    font-size: var(--font-ui-size);
     -webkit-font-smoothing: antialiased;
     text-wrap: pretty;
   }
@@ -74,6 +78,13 @@
   input, textarea, select { font: inherit; }
   ::selection { background: #c7edf6; }
 }
+
+/* Critical navigation colors are explicit so they survive stale utility CSS
+   during development and deployment cache transitions. */
+.kiir-primary-nav { background-color: #083d6c !important; border-color: #052e53 !important; }
+.kiir-primary-nav-link { background-color: #0b4f8a !important; border-color: rgba(5, 46, 83, 0.6) !important; color: #fff !important; }
+.kiir-primary-nav-link:hover, .kiir-primary-nav-link--active { background-color: #06355f !important; color: #fff !important; }
+.kiir-primary-nav-link--active { box-shadow: inset 0 0 0 1px #0fafcf; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

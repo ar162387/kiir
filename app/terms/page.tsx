@@ -11,7 +11,7 @@ export default function TermsPage() {
         Terms of Use
       </h1>
       <p className="mt-5 text-[15px] leading-relaxed text-slate">
-        KIIR's formal terms of use are being finalized alongside this new site. As stated on individual
+        KIIR&apos;s formal terms of use are being finalized alongside this new site. As stated on individual
         items, KIIR briefings are free to read and republish with attribution unless noted otherwise.
       </p>
       <p className="mt-4 text-[15px] leading-relaxed text-slate">

@@ -217,9 +217,9 @@ on conflict do nothing;
 -- ---------------------------------------------------------------------------
 insert into public.site_settings (key, value) values
   ('org', jsonb_build_object(
-    'name', 'Kashmir Institute of International Relations',
+    'name', 'KASHMIR INSTITUTE OF INTERNATIONAL RELATIONS',
     'name_ur', 'کشمیر انسٹیٹیوٹ آف انٹرنیشنل ریلیشنز',
-    'tagline', 'Peace through dialogue',
+    'tagline', 'Peace Through Dialogue',
     'tagline_ur', 'مکالمے کے ذریعے امن',
     'strapline', 'Islamabad · Est. 1990 · Research, advocacy & peacebuilding on Kashmir',
     'strapline_ur', 'اسلام آباد · قائم 1990 · کشمیر پر تحقیق، وکالت اور امن سازی',
@@ -227,7 +227,7 @@ insert into public.site_settings (key, value) values
     'blurb_ur', 'ایک آزاد تھنک ٹینک جو کشمیر تنازعہ، انسانی حقوق اور امن کے راستوں کو دستاویز کرتا ہے۔',
     'mission', 'We document the human cost of the Kashmir conflict and build the local capacity — political, civic and media — needed for a just and durable peace.',
     'mission_ur', 'ہم کشمیر تنازعہ کی انسانی قیمت کو دستاویز کرتے ہیں اور ایک منصفانہ و پائیدار امن کے لیے درکار مقامی سیاسی، شہری اور میڈیا استعداد تعمیر کرتے ہیں۔',
-    'logo_url', '/logo/kiir-logo.png'
+    'logo_url', '/logo/kiirlogo.png'
   )),
   ('contact', jsonb_build_object(
     'address', 'House 12, Street 42, F-8/1, Islamabad, Pakistan',
@@ -235,7 +235,7 @@ insert into public.site_settings (key, value) values
     'email', 'info@kiir.org'
   )),
   ('social', jsonb_build_object(
-    'x', '', 'facebook', '', 'linkedin', '', 'youtube', ''
+    'x', '', 'facebook', '', 'instagram', '', 'linkedin', ''
   )),
   ('ticker', jsonb_build_array(
     jsonb_build_object('text', 'KIIR statement: monitoring access to Jammu & Kashmir must be restored ahead of the March review', 'text_ur', 'کے آئی آئی آر کا بیان: مارچ کے جائزے سے قبل جموں و کشمیر تک نگرانی کی رسائی بحال کی جائے', 'slug', 'un-hrc-58-oral-statement'),
@@ -254,3 +254,12 @@ insert into public.site_settings (key, value) values
     )
   ))
 on conflict (key) do update set value = excluded.value;
+
+-- Keep the seed's public program list aligned with the current four-area model.
+-- The source records above retain their original historic tags; renaming preserves
+-- the relevant relationships and deleting the retired areas removes the rest.
+update public.categories set slug = 'international-advocacy', name = 'International Advocacy', name_ur = 'بین الاقوامی وکالت', sort_order = 4 where slug = 'political-development';
+update public.categories set slug = 'training', name = 'Training', name_ur = 'تربیت', sort_order = 3 where slug = 'media-development';
+update public.categories set slug = 'climate-action', name = 'Climate Action', name_ur = 'موسمیاتی اقدام', sort_order = 2 where slug = 'disaster-risk-reduction';
+update public.categories set sort_order = 1 where slug = 'human-rights';
+delete from public.categories where slug in ('gender', 'capacity-building-idps', 'conflict-resolution');

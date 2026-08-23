@@ -10,21 +10,21 @@ export default function SiteHeader({ org }: { org: OrgSettings }) {
 
   return (
     <header className="border-b border-line bg-canvas">
-      <div className="mx-auto flex max-w-[1520px] flex-wrap items-center gap-4 px-4 py-5 sm:px-6 sm:py-[22px] sm:pb-[18px]">
-        <Link href="/" className="flex items-center gap-3.5">
+      <div className="mx-auto flex max-w-[1520px] flex-wrap items-center gap-4 px-4 py-3 sm:px-6 sm:py-3">
+        <Link href="/" className="flex items-center gap-2">
           <Image
             src={org.logo_url}
             alt="KIIR"
-            height={52}
-            width={150}
+            height={128}
+            width={128}
             priority
-            className="block h-11 w-auto sm:h-[52px]"
+            className="block h-28 w-28 object-contain sm:h-32 sm:w-32"
           />
-          <span className="flex flex-col gap-1.5 border-l border-line pl-3.5">
-            <span className={isUr ? "block font-urdu text-[15px] leading-snug text-navy" : "block font-serif text-base leading-tight text-navy"}>
-              {pick(org.name, org.name_ur)}
+          <span className="flex flex-col gap-1.5">
+            <span className={isUr ? "block font-urdu text-[15px] leading-snug text-navy" : "block font-display text-[15px] leading-tight tracking-[0.01em] text-navy sm:text-[17px]"}>
+              {isUr ? pick(org.name, org.name_ur) : `${org.name} (KIIR)`}
             </span>
-            <span className="block font-mono text-[10.5px] tracking-[0.14em] text-teal uppercase">
+            <span className="block font-mono text-[10.5px] tracking-[0.14em] text-teal">
               {org.tagline}
             </span>
           </span>

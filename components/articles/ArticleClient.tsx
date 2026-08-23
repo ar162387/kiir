@@ -126,7 +126,6 @@ export default function ArticleClient({
               {pick(item.short_description, item.short_description_ur)}
             </p>
 
-            {/* eslint-disable-next-line react/no-danger -- trusted seed/admin content; sanitize (e.g. DOMPurify) before allowing untrusted authors */}
             <div
               className={`article-body ${isUr ? "article-body--ur" : ""}`}
               dir={isUr ? "rtl" : "ltr"}
@@ -225,12 +224,12 @@ export default function ArticleClient({
               <p className={isUr ? "mt-2.5 mb-4 font-urdu text-[13px] leading-[2.2] text-slate" : "mt-2.5 mb-4 text-[13px] leading-relaxed text-slate"}>
                 {t.supportBody}
               </p>
-              <Link
-                href="/contact"
+              <a
+                href="mailto:info@kiir.org"
                 className="block w-full bg-navy px-3 py-3 text-center font-mono text-[10.5px] uppercase tracking-[0.12em] text-canvas transition-colors duration-150 hover:bg-cyan hover:text-navy"
               >
                 {t.supportBtn}
-              </Link>
+              </a>
             </section>
           </aside>
         </div>
