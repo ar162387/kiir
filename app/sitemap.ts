@@ -4,7 +4,7 @@ import {getSupabase} from '@/lib/supabase/server';
 import {absoluteUrl} from '@/lib/seo';
 export const dynamic='force-dynamic';
 export default async function sitemap():Promise<MetadataRoute.Sitemap>{
- const paths=['/','/about','/activities','/events','/publications','/contact','/privacy','/terms',...(await getPrograms()).map(p=>'/programs/'+p.slug)];
+ const paths=['/','/about','/activities','/events','/publications','/contact','/privacy','/terms',...['opinion-articles','research-papers','short-stories','newsletters'].map(kind=>'/publications?kind='+kind),...(await getPrograms()).map(p=>'/programs/'+p.slug)];
  const entries:MetadataRoute.Sitemap=paths.flatMap(p=>[{url:absoluteUrl(p),alternates:{languages:{en:absoluteUrl(p),ur:absoluteUrl('/ur'+(p==='/'?'':p))}}},{url:absoluteUrl('/ur'+(p==='/'?'':p)),alternates:{languages:{en:absoluteUrl(p),ur:absoluteUrl('/ur'+(p==='/'?'':p))}}}]);
  const client=getSupabase();if(!client)return entries;
  // Bounded projections and pages; no editor bodies are fetched for discovery.

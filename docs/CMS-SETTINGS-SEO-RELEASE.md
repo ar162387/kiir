@@ -151,7 +151,7 @@ adapter; its unapproved Auth inserts are intentionally blocked by the new guard.
 
 ## Verification evidence
 
-- Unit/rendering/URL validation suite: 13 checks.
+- Unit/rendering/URL/SEO validation suite: 16 checks.
 - Live settings/contact/shared-logo suite: 19 checks, including physical provider
   deletion after the last reference and preservation while another owner remains.
 - Staff-only provisioning: 5 checks; authentication/RLS regression: 14 checks.
@@ -234,3 +234,13 @@ no horizontal overflow. A long organization name grew and shrank without
 clipping at desktop and narrower widths. A disposable long-title draft survived
 save/reload/private preview unchanged, then was deleted. Public settings were
 not saved or altered during the design checks.
+
+## Browser branding and search audit
+
+KIIR favicon/Apple icons and default social artwork replace starter branding.
+Category/pagination canonicals, published sitemap discovery, robots rules, Urdu
+alternates, default sharing images and legacy navigation redirects were checked
+in isolated Chrome. Article/event structured data and description fallback have
+specific regression coverage. See [the original-domain migration guide](SEO-DOMAIN-MIGRATION.md)
+for the distinction between this release and preserving the old domain's indexed
+article URLs. No historical content, DNS or Search Console property was changed.

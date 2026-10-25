@@ -1,3 +1,4 @@
+import {archivePage,paginatedPath} from '@/lib/seo-content';
 import {pageMetadata} from '@/lib/seo';
 import {getLocale} from '@/lib/locale';
 import {localePath} from '@/lib/locale-path';
@@ -15,7 +16,7 @@ export async function generateStaticParams() {
   return programs.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const{slug}=await params;const p=await getProgramBySlug(slug);return p?pageMetadata('/programs/'+slug,p.name,p.name_ur||p.name,p.description||'',p.description_ur||p.description||''):{robots:{index:false,follow:false}};}
+export async function generateMetadata({params,searchParams}:{params:Promise<{slug:string}>;searchParams:Promise<{page?:string;type?:string}>}):Promise<Metadata>{const[{slug},sp]=await Promise.all([params,searchParams]);const p=await getProgramBySlug(slug);if(!p)return {robots:{index:false,follow:false}};const metadata=await pageMetadata(paginatedPath('/programs/'+slug,sp.page),p.name+(archivePage(sp.page)>1?' · Page '+archivePage(sp.page):''),p.name_ur||p.name,p.description||'',p.description_ur||p.description||'');return {...metadata,...(sp.type&&sp.type!=='all'?{robots:{index:false,follow:true}}:{})};}
 
 export default async function ProgramPage({
   params,
@@ -39,7 +40,7 @@ export default async function ProgramPage({
   }
 
   const typeFilter: TypeFilter = VALID_TYPES.includes(sp.type as TypeFilter) ? (sp.type as TypeFilter) : "all";
-  const page = Math.max(1, Number(sp.page) || 1);
+  const page = archivePage(sp.page);
 
   const [result, stats] = await Promise.all([
     getItemsByProgram(slug, { type: typeFilter, page, pageSize: 9 }),

@@ -1,8 +1,9 @@
+import {archivePage,paginatedPath} from '@/lib/seo-content';
 import {pageMetadata} from "@/lib/seo";
 import ArchiveClient from "@/components/archives/ArchiveClient";
 import { getItemsByType } from "@/lib/queries";
 
-export async function generateMetadata(){return pageMetadata('/events','Events','تقریبات','KIIR events, meetings and dialogues.','کے آئی آئی آر کی تقریبات، اجلاس اور مکالمے۔');}
+export async function generateMetadata({searchParams}:{searchParams:Promise<{page?:string;category?:string}>}){const sp=await searchParams;const metadata=await pageMetadata(paginatedPath('/events',sp.page),'Events'+(archivePage(sp.page)>1?' · Page '+archivePage(sp.page):''),'تقریبات','KIIR events, meetings and dialogues.');return {...metadata,...(sp.category?{robots:{index:false,follow:true}}:{})};}
 
 export default async function EventsPage({
   searchParams,
@@ -10,7 +11,7 @@ export default async function EventsPage({
   searchParams: Promise<{ category?: string; page?: string }>;
 }) {
   const sp = await searchParams;
-  const page = Math.max(1, Number(sp.page) || 1);
+  const page = archivePage(sp.page);
   const result = await getItemsByType("event", { category: sp.category, page, pageSize: 9 });
 
   return (

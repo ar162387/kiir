@@ -16,7 +16,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <><JsonLd value={{'@context':'https://schema.org','@type':'Organization',name:org.name,url:siteOrigin(),...(org.logo_url?{logo:new URL(org.logo_url,siteOrigin()).toString()}:{}),...(contact.email?{email:contact.email}:{}),...(contact.phone?{telephone:contact.phone}:{}),...(contact.address?{address:contact.address}:{}),sameAs:Object.values(social).filter(Boolean)}}/><HomeClient
+    <><JsonLd value={{'@context':'https://schema.org','@type':'Organization','@id':siteOrigin()+'/#organization',name:org.name,url:siteOrigin(),...(org.logo_url?{logo:new URL(org.logo_url,siteOrigin()).toString()}:{}),...(contact.email?{email:contact.email}:{}),...(contact.phone?{telephone:contact.phone}:{}),...(contact.address?{address:contact.address}:{}),sameAs:Object.values(social).filter(Boolean)}}/><JsonLd value={{'@context':'https://schema.org','@type':'WebSite','@id':siteOrigin()+'/#website',url:siteOrigin(),name:org.name,alternateName:'KIIR',inLanguage:['en','ur'],publisher:{'@id':siteOrigin()+'/#organization'}}}/><HomeClient
       featured={featured}
       feed={feedResult.items}
       programs={programs}

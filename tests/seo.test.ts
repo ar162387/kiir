@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {articleGraph,contentLanguage,searchDescription,paginatedPath,archivePage} from '../lib/seo-content.ts';
+import type {ContentItem} from '../lib/types';
+const item:ContentItem={slug:'research-example',type:'publication',title:'Research example',title_ur:'تحقیق',short_description:'A clear research summary.',short_description_ur:null,body:'<p>Research body</p>',body_ur:null,item_date:'2026-10-25T10:00:00Z',priority:0,is_featured:false,thumbnail_url:'/photos/example.jpg',categories:[],publication_kind:'research-papers',authors:'Research Author',keywords:'Kashmir, human rights',is_event:true,event_start:'2026-12-15T10:00:00Z',event_status:'scheduled',event_venue:'Islamabad'};
+test('descriptions fall back to readable text and pagination preserves category URLs',()=>{
+ assert.equal(searchDescription('<p>Research &amp; dialogue</p>'),'Research & dialogue');assert.ok(searchDescription('Research '.repeat(100)).length<=170);
+ assert.equal(paginatedPath('/publications?kind=research-papers','2'),'/publications?kind=research-papers&page=2');for(const value of ['Infinity','NaN','-1','2.5','10001']){assert.equal(archivePage(value),1);assert.equal(paginatedPath('/events',value),'/events');}
+});
+test('unfinished Urdu translations retain English canonical identity in structured data',()=>{assert.equal(contentLanguage(item,'ur'),'en');const graph=articleGraph(item,'ur','https://kiir.org.pk');const article=graph['@graph'].find(node=>'publisher' in node);assert.ok(article);assert.equal(article.url,'https://kiir.org.pk/articles/research-example');assert.equal(article.inLanguage,'en');});
+test('independently classified publications retain article and event schema together',()=>{const graph=articleGraph(item,'en','https://kiir.org.pk',{name:'KIIR',logo:'/icon.png'});assert.deepEqual(graph['@graph'].map(x=>x['@type']),['ScholarlyArticle','BreadcrumbList','Event']);const article=graph['@graph'].find(node=>'publisher' in node);assert.ok(article);assert.ok(article.publisher.logo);assert.equal(article.headline,item.title);assert.equal(article.publisher.logo.url,'https://kiir.org.pk/icon.png');assert.equal(article.mainEntityOfPage['@id'],article.url);});

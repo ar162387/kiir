@@ -16,7 +16,8 @@ archives and homepage content read published Supabase snapshots.
 See [authentication setup](docs/CMS-AUTH-SETUP.md),
 [programs and media](docs/CMS-PROGRAMS-MEDIA.md), and
 [articles and publication editing](docs/CMS-CONTENT-PUBLICATIONS.md), and
-[settings, localization and release](docs/CMS-SETTINGS-SEO-RELEASE.md) for setup,
+[settings, localization and release](docs/CMS-SETTINGS-SEO-RELEASE.md), and
+[search visibility/domain migration](docs/SEO-DOMAIN-MIGRATION.md) for setup,
 staff workflows, formatting support and verification. The
 [implementation plan](docs/CMS-IMPLEMENTATION-PLAN.md) records the original scope.
 Historical content import remains excluded by request. Older `../PROJECT-NOTES.md` describes the original build.

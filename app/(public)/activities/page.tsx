@@ -1,8 +1,9 @@
+import {archivePage,paginatedPath} from '@/lib/seo-content';
 import {pageMetadata} from "@/lib/seo";
 import ArchiveClient from "@/components/archives/ArchiveClient";
 import { getItemsByType } from "@/lib/queries";
 
-export async function generateMetadata(){return pageMetadata('/activities','Activities','سرگرمیاں','Recent activities and field updates from KIIR.','کے آئی آئی آر کی سرگرمیاں اور تازہ ترین معلومات۔');}
+export async function generateMetadata({searchParams}:{searchParams:Promise<{page?:string;category?:string}>}){const sp=await searchParams;const metadata=await pageMetadata(paginatedPath('/activities',sp.page),'Activities'+(archivePage(sp.page)>1?' · Page '+archivePage(sp.page):''),'سرگرمیاں','Recent activities and field updates from KIIR.');return {...metadata,...(sp.category?{robots:{index:false,follow:true}}:{})};}
 
 export default async function ActivitiesPage({
   searchParams,
@@ -10,7 +11,7 @@ export default async function ActivitiesPage({
   searchParams: Promise<{ category?: string; page?: string }>;
 }) {
   const sp = await searchParams;
-  const page = Math.max(1, Number(sp.page) || 1);
+  const page = archivePage(sp.page);
   const result = await getItemsByType("activity", { category: sp.category, page, pageSize: 9 });
 
   return (
