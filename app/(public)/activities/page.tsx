@@ -1,3 +1,4 @@
+import {notFound} from 'next/navigation';
 import {archivePage,paginatedPath} from '@/lib/seo-content';
 import {pageMetadata} from "@/lib/seo";
 import ArchiveClient from "@/components/archives/ArchiveClient";
@@ -13,6 +14,7 @@ export default async function ActivitiesPage({
   const sp = await searchParams;
   const page = archivePage(sp.page);
   const result = await getItemsByType("activity", { category: sp.category, page, pageSize: 9 });
+  if(page>result.pageCount)notFound();
 
   return (
     <ArchiveClient

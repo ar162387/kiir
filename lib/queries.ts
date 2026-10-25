@@ -96,7 +96,15 @@ async function catalog(opts:CatalogOptions={}){
  if(opts.upcoming)query=query.eq('is_event',true).eq('event_status','scheduled').gt('event_start',new Date().toISOString()).order('event_start');
  else if(opts.featured)query=query.order('is_featured',{ascending:false}).order('feature_rank');
  query=query.order('published_at',{ascending:false}).order('id');
- const{data,error,count}=await query.range((page-1)*pageSize,page*pageSize-1);if(error)throw Error('Published content is temporarily unavailable.');
+ const{data,error,count}=await query.range((page-1)*pageSize,page*pageSize-1);
+ if(error){
+  if(error.code!=='PGRST103')throw Error('Published content is temporarily unavailable.');
+  // A deleted/empty last page is not a service outage. Recover its bounded count
+  // so route pages can return a real 404 for an out-of-range archive request.
+  const{count:actualCount,error:countError}=await query.range(0,0);
+  if(countError)throw Error('Published content is temporarily unavailable.');
+  return {items:[],total:actualCount??0,page,pageCount:Math.max(1,Math.ceil((actualCount??0)/pageSize))};
+ }
  const items=data.map(row=>publicContent({...row,excerpt:row.short_description,excerpt_ur:row.short_description_ur} as unknown as ContentDraft,row.slug,row.published_at,row.categories));
  return {items,total:count??0,page,pageCount:Math.max(1,Math.ceil((count??0)/pageSize))};
 }

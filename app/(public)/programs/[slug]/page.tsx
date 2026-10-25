@@ -46,6 +46,7 @@ export default async function ProgramPage({
     getItemsByProgram(slug, { type: typeFilter, page, pageSize: 9 }),
     getProgramStats(slug),
   ]);
+  if(page>result.pageCount)notFound();
 
   return (
     <ProgramClient

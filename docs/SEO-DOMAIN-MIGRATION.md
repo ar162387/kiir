@@ -11,7 +11,10 @@ and summary/body. Published articles are included automatically in the XML
 sitemap and RSS. Drafts, archived content and unfinished Urdu translations are
 excluded. Supported Urdu pages have reciprocal language alternates. Publication
 categories have distinct titles/canonicals and are discoverable in the sitemap.
-Paginated archives have their own canonical page URLs. Date/type-filtered
+Paginated archives have their own canonical page URLs. Requests beyond the
+last archive page display the not-found view with noindex rather than a service
+error. Next.js may have started a streamed HTTP 200 response before discovering
+that a page is absent; the explicit noindex keeps that invalid page out of search. Date/type-filtered
 variants avoid competing in the index. Structured data retains Article or
 ScholarlyArticle information even when the record also has Event classification.
 The publisher identity, logo, article identity and breadcrumbs are explicit.
