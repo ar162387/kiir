@@ -4,7 +4,7 @@ import{writeFile}from'node:fs/promises';
 const source='public/logo/kiirlogo.png';
 await sharp(source).resize(96,96).png().toFile('app/icon.png');
 await sharp(source).resize(180,180).png().toFile('app/apple-icon.png');
-const sizes=[16,32,48,64,256],images=await Promise.all(sizes.map(size=>sharp(source).resize(size,size).png().toBuffer()));
+const sizes=[16,32,48,64,256],images=await Promise.all(sizes.map(size=>sharp(source).resize(size,size).ensureAlpha().png().toBuffer()));
 const header=Buffer.alloc(6+16*sizes.length);header.writeUInt16LE(1,2);header.writeUInt16LE(sizes.length,4);let offset=header.length;
 images.forEach((image,i)=>{const at=6+i*16;header[at]=sizes[i]===256?0:sizes[i];header[at+1]=header[at];header.writeUInt16LE(1,at+4);header.writeUInt16LE(32,at+6);header.writeUInt32LE(image.length,at+8);header.writeUInt32LE(offset,at+12);offset+=image.length;});
 await writeFile('app/favicon.ico',Buffer.concat([header,...images]));
