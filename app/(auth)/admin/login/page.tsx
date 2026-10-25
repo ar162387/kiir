@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   if (member) redirect(member.must_change_password ? '/admin/account' : safeAdminReturnPath(params.next));
   return <main id="main-content" className="cms cms-login" lang="en" dir="ltr">
     <section className="cms-login-story">
-      <Link href="/" className="cms-brand"><Image src="/logo/kiirlogo.png" width={72} height={72} alt="KIIR" /><span>KIIR<span className="cms-brand-sub">Peace Through Dialogue</span></span></Link>
+      <Link href="/" className="cms-brand"><Image src="/logo/kiir-emblem.png" width={72} height={72} alt="KIIR" /><span>KIIR<span className="cms-brand-sub">Peace Through Dialogue</span></span></Link>
       <div className="cms-login-copy"><p className="cms-eyebrow">THE EDITORIAL DESK</p><h1>Ideas that inform.<br />Stories that matter.</h1><p>A dedicated workspace for the people documenting human rights, building dialogue, and advancing peace.</p><div className="cms-login-rule" /></div>
       <p className="cms-login-credit">Kashmir Institute of International Relations</p>
     </section>

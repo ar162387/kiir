@@ -62,3 +62,30 @@ Google's migration guidance:
 https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes
 Google's sitemap guidance:
 https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview
+
+## Preserve the branded Google search appearance
+
+The owner's search screenshots show grouped sitelinks for About Us, Conflict
+Resolution, Political Development, Executive Director and KIIR 2024 Internship
+program. Treat these as priority landing pages during the original-domain move.
+About Us has a meaningful `/about-us` → `/about` mapping. The recovered inventory
+includes `/conflict-resolution` and `/political-development`; verify their exact
+content and destinations before cutover. Executive Director and the 2024
+internship URLs still require confirmation from the current site/Search Console.
+Do not substitute unrelated programs for these pages. Keep any retained 2024
+internship accurately dated/archived; publish current opportunities separately.
+
+Keep priority pages crawlable and linked with descriptive navigation, titles and
+headings. Google selects sitelinks automatically; their exact layout/order and
+the “More results” site-search link cannot be set in the CMS or guaranteed.
+Preserve the original domain, meaningful landing pages and URL mappings to
+support continuity. Historical migration is still outside the current scope.
+
+Retain the existing Google Business Profile, its reviews and business identity.
+Do not create a replacement listing for the new website. Check its website link
+and factual contact details at cutover. The map/review panel is managed through
+that existing profile, separately from website metadata.
+
+Sources:
+https://developers.google.com/search/docs/appearance/sitelinks
+https://support.google.com/business/answer/3038177

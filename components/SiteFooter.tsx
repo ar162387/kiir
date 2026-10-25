@@ -32,7 +32,7 @@ export default function SiteFooter({
       <div className="mx-auto grid max-w-[1520px] grid-cols-1 gap-9 px-4 py-10 sm:grid-cols-2 sm:px-6 sm:py-[54px] lg:grid-cols-5">
         <div className="min-w-0 sm:col-span-2">
           <div className="flex items-center gap-3">
-            {org.logo_url&&<Image unoptimized src={org.logo_url} alt="KIIR" width={128} height={128} className="block h-28 w-28 object-contain" />}
+            {org.logo_url&&<Image unoptimized src={org.logo_url} alt="KIIR" width={128} height={128} className="brand-on-dark block h-28 w-28 shrink-0 object-contain" />}
             <span className="font-mono text-[13px] tracking-[0.14em] text-[#7FD4E6]">
               <FieldText en={org.tagline} ur={org.tagline_ur}/>
             </span>

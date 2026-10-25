@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 import{writeFile}from'node:fs/promises';
 // Exact packaged KIIR artwork, resized for browser/OS icon formats.
-const source='public/logo/kiirlogo.png';
+const source='public/logo/kiir-emblem.png';
 await sharp(source).resize(96,96).png().toFile('app/icon.png');
 await sharp(source).resize(180,180).png().toFile('app/apple-icon.png');
 const sizes=[16,32,48,64,256],images=await Promise.all(sizes.map(size=>sharp(source).resize(size,size).ensureAlpha().png().toBuffer()));

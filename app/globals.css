@@ -168,3 +168,6 @@
 @keyframes kiirShimmer{to{transform:translateX(100%)}}
 @media(max-width:640px){.kiir-loading{padding:28px 16px 48px}.kiir-loading-cms,.kiir-loading-editor{padding:8px 0 24px}.kiir-skeleton-grid{grid-template-columns:1fr}.kiir-skeleton-title{height:30px;width:85%}.kiir-skeleton-cover{height:200px}}
 @media(prefers-reduced-motion:reduce){.kiir-navigation-bar span,.kiir-spinner,.kiir-skeleton::after{animation:none}.kiir-navigation-bar span{width:100%}.kiir-skeleton::after{display:none}}
+
+/* A fine light edge keeps the blue ribbon distinct on dark brand surfaces. */
+.brand-on-dark { filter: drop-shadow(0 0 1px rgba(255,255,255,.85)); }

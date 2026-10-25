@@ -1,3 +1,4 @@
+import {brandLogoUrl} from './branding';
 import {activeAnnouncements,type Announcement} from "@/lib/cms/settings-types";
 import { SEED_ABOUT, SEED_CONTACT, SEED_ITEMS, SEED_ORG, SEED_PROGRAMS, SEED_SOCIAL, SEED_TICKER } from "@/lib/seed/data";
 import type { AboutSettings, ContactSettings, ContentItem, ContentType, OrgSettings, Program, SocialSettings } from "@/lib/types";
@@ -40,7 +41,7 @@ const getSettings=cache(async()=>{
  return Object.fromEntries(data.map(row=>[row.key,row.value]));
 });
 async function setting<T>(key:string,fallback:T):Promise<T>{const settings=await getSettings();if(!settings)return fallback;if(!Object.hasOwn(settings,key))throw Error('Website settings need configuration.');return settings[key] as T;}
-export async function getOrgSettings():Promise<OrgSettings>{return setting('org',SEED_ORG);}
+export async function getOrgSettings():Promise<OrgSettings>{const org=await setting('org',SEED_ORG);return {...org,logo_url:brandLogoUrl(org.logo_url)};}
 export async function getContactSettings():Promise<ContactSettings>{return setting('contact',SEED_CONTACT);}
 export async function getSocialSettings():Promise<SocialSettings>{return setting('social',SEED_SOCIAL);}
 export async function getAboutSettings():Promise<AboutSettings>{return setting('about',SEED_ABOUT);}

@@ -8,7 +8,7 @@ import { fontVariables } from "./fonts";
 export const metadata: Metadata = {
   metadataBase:new URL(siteOrigin()),
   applicationName:"KIIR",
-  icons:{icon:[{url:"/icon.png?v=kiir-20261025",type:"image/png",sizes:"96x96"}],shortcut:"/favicon.ico?v=kiir-20261025",apple:[{url:"/apple-icon.png?v=kiir-20261025",sizes:"180x180"}]},
+  icons:{icon:[{url:"/icon.png?v=kiir-transparent-20261025",type:"image/png",sizes:"96x96"}],shortcut:"/favicon.ico?v=kiir-transparent-20261025",apple:[{url:"/apple-icon.png?v=kiir-transparent-20261025",sizes:"180x180"}]},
   title: { default: "KASHMIR INSTITUTE OF INTERNATIONAL RELATIONS (KIIR)", template: "%s · KIIR" },
   description: "An independent think tank documenting the Kashmir conflict, human rights and pathways to peace.",
 };

@@ -230,3 +230,5 @@
 .cms-sidebar nav>a[aria-current=page]{color:#fff;background:#1b414f;box-shadow:inset 3px 0 #24bed5;font-weight:500}
 .cms-url-field{display:grid;gap:8px}
 .cms-url-field>.cms-text-link{justify-self:start}
+
+.cms-sidebar .cms-brand img,.cms-login-story .cms-brand img { filter:drop-shadow(0 0 1px rgba(255,255,255,.85)); }

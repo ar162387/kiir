@@ -289,7 +289,7 @@ export const SEED_ORG: OrgSettings = {
     "We document the human cost of the Kashmir conflict and build the local capacity — political, civic and media — needed for a just and durable peace.",
   mission_ur:
     "ہم کشمیر تنازعہ کی انسانی قیمت کو دستاویز کرتے ہیں اور ایک منصفانہ و پائیدار امن کے لیے درکار مقامی سیاسی، شہری اور میڈیا استعداد تعمیر کرتے ہیں۔",
-  logo_url: "/logo/kiirlogo.png",
+  logo_url: "/logo/kiir-emblem.png",
 };
 
 export const SEED_CONTACT: ContactSettings = {

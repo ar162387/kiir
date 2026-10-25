@@ -1,5 +1,6 @@
 'use client';
 
+import {brandLogoUrl} from '@/lib/branding';
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { imageDeliveryUrl, type MediaImage } from '@/lib/cms/program-types';
@@ -62,7 +63,7 @@ export default function ImagePicker({assetId,url,images,onChange,onBusy,variant=
   }
   return <div className={`cms-image-picker cms-image-picker-${variant}`}>
     {url?<div className="cms-image-preview">
-      <Image unoptimized src={url} width={640} height={360} alt={variant==='logo'?'Organization logo preview':'Selected image preview'} />
+      <Image unoptimized src={brandLogoUrl(url)} width={640} height={360} alt={variant==='logo'?'Organization logo preview':'Selected image preview'} />
       <button type="button" className="cms-image-remove" disabled={busy} onClick={()=>{onChange(null,null);setProgress('Image will be removed when you save.');}}>Remove image</button>
     </div>:<div className="cms-image-empty">{variant==='logo'?'Choose an organization logo.':'Add a photo for this content.'}</div>}
     <label>{variant==='logo'?'Upload logo':'Upload image'}<input ref={input} type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);}} /></label>
