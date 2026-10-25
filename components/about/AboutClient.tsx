@@ -1,16 +1,19 @@
 "use client";
+import FieldText from "@/components/FieldText";
 
-import Link from "next/link";
+import Link from "@/components/LocalizedLink";
 import { useLanguage } from "@/components/LanguageProvider";
 import { ArrowRight } from "@/components/icons";
-import type { OrgSettings, Program } from "@/lib/types";
+import type { OrgSettings, Program, AboutSettings } from "@/lib/types";
 
 export default function AboutClient({
   org,
   programs,
+  about,
 }: {
   org: OrgSettings;
   programs: Program[];
+  about: AboutSettings;
 }) {
   const { t, isUr, pick } = useLanguage();
 
@@ -20,10 +23,10 @@ export default function AboutClient({
         <div className="mx-auto max-w-[1520px] px-4 py-11 sm:px-6 sm:py-14">
           <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-teal">{t.about}</div>
           <h1 className={isUr ? "mt-2.5 max-w-[24ch] font-urdu text-[32px] leading-[2] text-navy" : "mt-2.5 max-w-[24ch] font-serif text-[clamp(30px,4vw,46px)] leading-[1.1] tracking-[-0.02em] text-navy"}>
-            {pick(org.name, org.name_ur)}
+            <FieldText en={org.name} ur={org.name_ur} serif/>
           </h1>
           <p className={isUr ? "mt-4 max-w-[60ch] font-urdu text-base leading-[2.3] text-slate" : "mt-4 max-w-[60ch] font-serif text-lg leading-relaxed text-slate"}>
-            {pick(org.mission, org.mission_ur)}
+            <FieldText en={org.mission} ur={org.mission_ur}/>
           </p>
         </div>
       </section>
@@ -40,9 +43,9 @@ export default function AboutClient({
                   <span aria-hidden className="block h-full w-full bg-cover bg-center transition-transform duration-300 ease-out group-hover:scale-110" style={p.image_url ? { backgroundImage: `url(\"${p.image_url}\")` } : undefined} />
                 </span>
                 <span className={isUr ? "block px-5.5 font-urdu text-[18px] leading-[2.1] text-navy" : "block px-5.5 font-serif text-[19px] leading-[1.22] text-navy"}>
-                  {pick(p.name, p.name_ur)}
+                  <FieldText en={p.name} ur={p.name_ur} serif/>
                 </span>
-                <span className={isUr ? "block px-5.5 font-urdu text-[12.5px] leading-[2.2] text-slate" : "block px-5.5 text-[13px] leading-relaxed text-slate"}>{pick(p.description, p.description_ur)}</span>
+                <span className={isUr ? "block px-5.5 font-urdu text-[12.5px] leading-[2.2] text-slate" : "block px-5.5 text-[13px] leading-relaxed text-slate"}><FieldText en={p.description} ur={p.description_ur}/></span>
                 <span className="flex-1" />
                 <span className="mx-5.5 flex items-center justify-end border-t border-line-soft pt-3 text-teal"><ArrowRight /></span>
               </Link>
@@ -50,12 +53,9 @@ export default function AboutClient({
           </div>
         </div>
 
-        <blockquote className="mt-13 border-l-4 border-cyan bg-tint px-6 py-7 sm:px-9">
-          <p className={isUr ? "m-0 font-urdu text-[20px] leading-[2.3] text-navy" : "m-0 max-w-[52ch] font-serif text-[24px] leading-[1.42] text-navy"}>
-            {isUr ? "امن کی پائیدار بنیاد باوقار مکالمے، تحقیق اور ان آوازوں کی نمائندگی میں ہے جنہیں طویل عرصے سے نظر انداز کیا گیا ہے۔" : "A durable peace begins with dignified dialogue, rigorous research and representation for the voices too long left outside the room."}
-          </p>
-          <footer className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-teal">{isUr ? "چیئرمین، کے آئی آئی آر" : "Chairman, KIIR"}</footer>
-        </blockquote>
+        {(about.history_en||about.history_ur)&&<section className="mt-12 max-w-[780px]"><h2 className="font-serif text-2xl text-navy">{isUr?'ہماری تاریخ':'Our history'}{about.founded?` · ${about.founded}`:''}</h2><p lang={isUr&&about.history_ur?'ur':'en'} dir={isUr&&about.history_ur?'rtl':'ltr'} className="mt-5 whitespace-pre-wrap leading-loose">{pick(about.history_en,about.history_ur)}</p></section>}
+        {about.principles.length>0&&<section className="mt-12 grid gap-6 sm:grid-cols-2">{about.principles.map((p,i)=><div key={i} className="border-t border-line pt-5"><h2 className="font-serif text-xl text-navy">{pick(p.title_en,p.title_ur)}</h2><p className="mt-3 whitespace-pre-wrap leading-relaxed">{pick(p.body_en,p.body_ur)}</p></div>)}</section>}
+
       </section>
     </div>
   );

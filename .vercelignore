@@ -1,0 +1,9 @@
+.git
+.env*
+.cms-credentials*
+.cms-backups
+.playwright-cli
+output
+node_modules
+.next
+docs

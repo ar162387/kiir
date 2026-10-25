@@ -1,7 +1,7 @@
 // Shared shapes for the public site. Mirrors supabase/migrations/0001_public_site.sql —
 // keep the two in sync; this is the schema's TypeScript face, not a separate model.
 
-export type ContentType = "activity" | "event" | "news_publication" | "publication" | "page";
+export type ContentType = "article" | "activity" | "event" | "news_publication" | "publication" | "page";
 export type PublicationKind = "opinion-articles" | "research-papers" | "short-stories" | "newsletters";
 
 export type Lang = "en" | "ur";
@@ -33,6 +33,14 @@ export interface ContentItem {
   is_featured: boolean;
   thumbnail_url: string | null;
   publication_kind?: PublicationKind | null;
+  is_activity?: boolean;
+  is_event?: boolean;
+  event_start?: string | null; event_end?: string | null; event_zone?: string; event_status?: string;
+  event_venue?: string; event_url?: string; registration_url?: string;
+  authors?: string; abstract?: string; keywords?: string; references?: string; issue?: string; epigraph?: string;
+  document_url?: string; document_ur_url?: string; seo_title?: string; seo_description?: string;
+  contents?: {id:string;text:string}[]; contents_ur?: {id:string;text:string}[];
+  gallery?: {url:string;alt:string;caption:string;caption_ur:string}[];
   categories: string[]; // program slugs
 }
 
@@ -55,6 +63,7 @@ export interface OrgSettings {
   mission: string;
   mission_ur: string;
   logo_url: string;
+  logo_asset_id?: string | null;
 }
 
 export interface ContactSettings {
@@ -81,9 +90,10 @@ export interface TickerItem {
 export const PUBLIC_TYPES: ContentType[] = ["activity", "event", "news_publication", "publication"];
 
 export const TYPE_LABEL: Record<ContentType, { en: string; ur: string }> = {
+  article: { en: "Article", ur: "مضمون" },
   activity: { en: "Activity", ur: "سرگرمی" },
   event: { en: "Event", ur: "تقریب" },
-  news_publication: { en: "News & Publications", ur: "خبریں و اشاعتیں" },
+  news_publication: { en: "Publications", ur: "خبریں و اشاعتیں" },
   publication: { en: "Publication", ur: "اشاعت" },
   page: { en: "Page", ur: "صفحہ" },
 };

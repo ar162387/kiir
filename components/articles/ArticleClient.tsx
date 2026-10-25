@@ -1,31 +1,36 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/LocalizedLink";
+import Image from "next/image";
+import {PublicationDetails} from "./PublicationDetails";
 import { useLanguage } from "@/components/LanguageProvider";
 import Thumb from "@/components/Thumb";
 import { ArrowUpRight, MailIcon, PrinterIcon } from "@/components/icons";
 import { formatDate } from "@/lib/format";
 import { TYPE_LABEL } from "@/lib/types";
-import type { ContentItem, Program } from "@/lib/types";
+import type { ContentItem, Program, ContactSettings } from "@/lib/types";
 
 export default function ArticleClient({
   item,
   categories,
   related,
+  contact={address:'',phone:'',email:''},
 }: {
   item: ContentItem;
   categories: Program[];
   related: ContentItem[];
+  contact?: ContactSettings;
 }) {
-  const { t, lang, isUr, setLang, pick } = useLanguage();
+  const { t, lang, isUr: shellUr, setLang, pick } = useLanguage();
 
-  const body = pick(item.body, item.body_ur) || pick(item.short_description, item.short_description_ur);
+  const isUr=shellUr&&Boolean(item.title_ur&&(item.body_ur||item.document_ur_url));
+  const body = (isUr?item.body_ur:item.body) || "";
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
   const onShare = async () => {
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
-        await navigator.share({ title: pick(item.title, item.title_ur), url: shareUrl });
+        await navigator.share({ title: (isUr?item.title_ur:item.title)??item.title, url: shareUrl });
         return;
       } catch {
         /* user cancelled — fall through to clipboard */
@@ -36,7 +41,7 @@ export default function ArticleClient({
     }
   };
 
-  const mailHref = `mailto:?subject=${encodeURIComponent(pick(item.title, item.title_ur))}&body=${encodeURIComponent(shareUrl)}`;
+  const mailHref = `mailto:?subject=${encodeURIComponent((isUr?item.title_ur:item.title)??item.title)}&body=${encodeURIComponent(shareUrl)}`;
 
   return (
     <div className="animate-[kiirFade_220ms_ease_both]">
@@ -59,7 +64,7 @@ export default function ArticleClient({
         />
 
         <div className="mt-8.5 flex flex-wrap items-start gap-12">
-          <div className="min-w-0 flex-[3_1_520px]">
+          <div className="min-w-0 flex-[3_1_520px]" lang={isUr?"ur":"en"} dir={isUr?"rtl":"ltr"}>
             <div className="flex flex-wrap gap-2">
               {categories.map((c) => (
                 <Link
@@ -79,7 +84,7 @@ export default function ArticleClient({
                   : "mt-5 max-w-[26ch] font-serif text-[clamp(32px,4vw,52px)] leading-[1.08] tracking-[-0.02em] text-navy"
               }
             >
-              {pick(item.title, item.title_ur)}
+              {(isUr?item.title_ur:item.title)??item.title}
             </h1>
 
             <div className="mt-6 flex flex-wrap items-center gap-4 border-y border-line py-3.5">
@@ -123,15 +128,19 @@ export default function ArticleClient({
                   : "mt-6.5 mb-5.5 font-serif text-[20.5px] leading-[1.6] text-navy"
               }
             >
-              {pick(item.short_description, item.short_description_ur)}
+              {(isUr?item.short_description_ur:item.short_description)}
             </p>
 
+            <PublicationDetails item={item} isUr={isUr}/>
             <div
-              className={`article-body ${isUr ? "article-body--ur" : ""}`}
+              lang={isUr?'ur':'en'}
+              className={`editor-prose ${item.publication_kind==='research-papers'?'publication-research':item.publication_kind==='short-stories'?'publication-story':item.publication_kind==='newsletters'?'publication-newsletter':''}`}
               dir={isUr ? "rtl" : "ltr"}
               dangerouslySetInnerHTML={{ __html: body }}
             />
 
+            {item.publication_kind==='research-papers'&&item.references&&<section className="editor-prose publication-references"><h2>{isUr?'حوالہ جات':'References'}</h2><p lang="en" dir="ltr">{item.references}</p></section>}
+            {Boolean(item.gallery?.length)&&<div className="editor-prose content-gallery">{item.gallery!.map((g,i)=><figure key={i}><Image unoptimized src={g.url} alt={g.alt} width={1200} height={800} style={{height:'auto'}}/><figcaption>{isUr&&g.caption_ur?g.caption_ur:g.caption}</figcaption></figure>)}</div>}
             <div className="mt-9 flex flex-wrap items-center gap-2.5 border-t border-line pt-4.5">
               <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">{t.share}</span>
               <span className="flex gap-2">
@@ -217,7 +226,7 @@ export default function ArticleClient({
               <MetaRow k={isUr ? "پروگرام" : "Programs"} v={categories.map((c) => pick(c.name, c.name_ur)).join(", ") || "—"} />
               <MetaRow k={isUr ? "زبانیں" : "Languages"} v={item.title_ur ? "EN · UR" : "EN"} />
             </section>
-            <section className="bg-tint p-5.5">
+            {contact.email&&<section className="bg-tint p-5.5">
               <h2 className={isUr ? "m-0 font-urdu text-[19px] leading-[2] text-navy" : "m-0 font-serif text-[19px] leading-tight text-navy"}>
                 {t.supportTitle}
               </h2>
@@ -225,12 +234,12 @@ export default function ArticleClient({
                 {t.supportBody}
               </p>
               <a
-                href="mailto:info@kiir.org"
+                href={`mailto:${contact.email}`}
                 className="block w-full bg-navy px-3 py-3 text-center font-mono text-[10.5px] uppercase tracking-[0.12em] text-canvas transition-colors duration-150 hover:bg-cyan hover:text-navy"
               >
                 {t.supportBtn}
               </a>
-            </section>
+            </section>}
           </aside>
         </div>
       </article>

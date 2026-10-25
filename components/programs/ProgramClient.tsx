@@ -1,6 +1,7 @@
 "use client";
+import FieldText from "@/components/FieldText";
 
-import Link from "next/link";
+import Link from "@/components/LocalizedLink";
 import { useLanguage } from "@/components/LanguageProvider";
 import Thumb from "@/components/Thumb";
 import { ArrowLeft, ArrowRight } from "@/components/icons";
@@ -29,7 +30,10 @@ export default function ProgramClient({
   typeFilter: TypeFilter;
   stats: { total: number; activity: number; event: number; publication: number };
 }) {
-  const { t, isUr, pick } = useLanguage();
+  const { t, isUr } = useLanguage();
+
+  const nameUr=isUr&&Boolean(program.name_ur?.trim());
+  const introUr=isUr&&Boolean(program.long_description_ur?.trim());
 
   const filterHref = (f: TypeFilter) => (f === "all" ? `/programs/${program.slug}` : `/programs/${program.slug}?type=${f}`);
 
@@ -50,26 +54,26 @@ export default function ProgramClient({
             <Link href="/" className="text-[#8FA3B8] hover:text-white">
               {t.home}
             </Link>{" "}
-            / {t.ourPrograms} / <span className="text-cyan">{pick(program.name, program.name_ur)}</span>
+            / {t.ourPrograms} / <span className="text-cyan"><FieldText en={program.name} ur={program.name_ur} serif/></span>
           </div>
           <div className="mt-5.5 flex flex-wrap items-end gap-10">
-            <h1
+            <h1 lang={nameUr?"ur":"en"} dir={nameUr?"rtl":"ltr"}
               className={
-                isUr
+                nameUr
                   ? "m-0 flex-[1_1_420px] font-urdu text-[clamp(28px,3.6vw,46px)] leading-[1.9] text-white"
                   : "m-0 flex-[1_1_420px] font-serif text-[clamp(34px,4.6vw,58px)] leading-[1.05] tracking-[-0.02em] text-white"
               }
             >
-              {pick(program.name, program.name_ur)}
+              <FieldText en={program.name} ur={program.name_ur} serif/>
             </h1>
-            <p
+            <p lang={introUr?"ur":"en"} dir={introUr?"rtl":"ltr"}
               className={
-                isUr
+                introUr
                   ? "m-0 flex-[1_1_320px] font-urdu text-sm leading-[2.3] text-[#B9C7D6]"
                   : "m-0 max-w-[56ch] flex-[1_1_320px] text-[15px] leading-relaxed text-[#B9C7D6]"
               }
             >
-              {pick(program.long_description, program.long_description_ur)}
+              <FieldText en={program.long_description} ur={program.long_description_ur}/>
             </p>
           </div>
           <div className="mt-7.5 flex flex-wrap gap-7 border-t border-white/15 pt-4.5 font-mono text-[11px] uppercase tracking-[0.1em] text-[#8FA3B8]">
@@ -121,10 +125,10 @@ export default function ProgramClient({
                     <span className="font-mono text-[9.5px] text-muted">{formatDate(it.item_date, isUr ? "ur" : "en")}</span>
                   </span>
                   <span className={isUr ? "mt-2 block font-urdu text-[17px] leading-[2.1] text-navy" : "mt-2 block font-serif text-[19px] leading-[1.25] text-navy"}>
-                    {pick(it.title, it.title_ur)}
+                    <FieldText en={it.title} ur={it.title_ur} serif/>
                   </span>
                   <span className={isUr ? "mt-2 block font-urdu text-[13px] leading-[2.2] text-slate" : "mt-2 block text-[13.5px] leading-relaxed text-slate"}>
-                    {pick(it.short_description, it.short_description_ur)}
+                    <FieldText en={it.short_description} ur={it.short_description_ur}/>
                   </span>
                 </span>
               </Link>

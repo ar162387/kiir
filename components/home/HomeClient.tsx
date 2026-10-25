@@ -1,6 +1,7 @@
 "use client";
+import FieldText from "@/components/FieldText";
 
-import Link from "next/link";
+import Link from "@/components/LocalizedLink";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import Thumb from "@/components/Thumb";
@@ -115,7 +116,7 @@ export default function HomeClient({
                         : "block max-w-[22ch] font-serif text-[26px] leading-[1.1] tracking-[-0.01em] text-white sm:text-[36px]"
                     }
                   >
-                    {pick(lead.title, lead.title_ur)}
+                    <FieldText en={lead.title} ur={lead.title_ur} serif/>
                   </span>
                   <span
                     className={
@@ -124,7 +125,7 @@ export default function HomeClient({
                         : "mt-3 block max-w-[52ch] text-sm leading-relaxed text-[#C8D3DF]"
                     }
                   >
-                    {pick(lead.short_description, lead.short_description_ur)}
+                    <FieldText en={lead.short_description} ur={lead.short_description_ur}/>
                   </span>
                   <span className="mt-3.5 block font-mono text-[11px] text-[#A9B8C7]">
                     {formatDate(lead.item_date, isUr ? "ur" : "en")}
@@ -177,10 +178,10 @@ export default function HomeClient({
               <h2 className="m-0 mb-3 border-b border-navy pb-2.5 font-mono text-[11.5px] font-medium uppercase tracking-[0.16em] text-navy">{t.upcoming}</h2>
               {upcoming.length === 0 && <p className="py-3 text-sm text-muted">—</p>}
               {upcoming.map((e) => {
-                const { mon, day } = formatMonthDay(e.item_date);
+                const { mon, day } = formatMonthDay(e.event_start??e.item_date);
                 return <Link key={e.slug} href={`/articles/${e.slug}`} className="flex items-start gap-3.5 border-b border-line py-4 transition-colors hover:bg-tint">
                   <span className="w-11.5 flex-none border border-cyan py-1.5 text-center"><span className="block font-mono text-[9px] uppercase tracking-[0.1em] text-teal">{mon}</span><span className="block font-serif text-[19px] leading-tight text-navy">{day}</span></span>
-                  <span className={isUr ? "font-urdu text-[16px] leading-[2] text-navy" : "font-serif text-[17px] leading-tight text-navy"}>{pick(e.title, e.title_ur)}</span>
+                  <span className={isUr ? "font-urdu text-[16px] leading-[2] text-navy" : "font-serif text-[17px] leading-tight text-navy"}><FieldText en={e.title} ur={e.title_ur} serif/></span>
                 </Link>;
               })}
             </section>
@@ -225,10 +226,10 @@ export default function HomeClient({
                     </span>
                   </span>
                   <span className={isUr ? "mt-2 block font-urdu text-[16px] leading-[2.1] text-navy" : "mt-2 block font-serif text-[21px] leading-[1.27] tracking-[-0.005em] text-navy"}>
-                    {pick(it.title, it.title_ur)}
+                    <FieldText en={it.title} ur={it.title_ur} serif/>
                   </span>
                   <span className={isUr ? "mt-2 block font-urdu text-[14.5px] leading-[2.2] text-slate" : "mt-2 block text-[14px] leading-relaxed text-slate"}>
-                    {pick(it.short_description, it.short_description_ur)}
+                    <FieldText en={it.short_description} ur={it.short_description_ur}/>
                   </span>
                   <span className="mt-2.5 block font-mono text-[10.5px] text-muted">
                     {formatDate(it.item_date, isUr ? "ur" : "en")}
@@ -259,7 +260,7 @@ export default function HomeClient({
                   {pick(...programLabel(programs, p.categories[0]))}
                 </span>
                 <span className={isUr ? "mt-1.5 block font-urdu text-[16px] leading-[2.1] text-navy" : "mt-1.5 block font-serif text-[15.5px] leading-[1.27] text-navy"}>
-                  {pick(p.title, p.title_ur)}
+                  <FieldText en={p.title} ur={p.title_ur} serif/>
                 </span>
                 <span className="mt-1.5 block font-mono text-[10px] text-muted">
                   {formatDate(p.item_date, isUr ? "ur" : "en")}
@@ -274,7 +275,7 @@ export default function HomeClient({
       {/* ---------------------------------------------------------------- */}
       {/* Programs */}
       {/* ---------------------------------------------------------------- */}
-      <section aria-label="Our Programs" className="border-y border-line bg-tint">
+      {programs.length>0&&<section aria-label="Our Programs" className="border-y border-line bg-tint">
         <div className="mx-auto max-w-[1520px] px-4 py-13 sm:px-6">
           <div className="mb-6.5 flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -299,11 +300,11 @@ export default function HomeClient({
                     style={p.image_url ? { backgroundImage: `url("${p.image_url}")` } : undefined}
                   />
                 </span>
-                <span className={isUr ? "block px-5.5 font-urdu text-[18px] leading-[2.1] text-navy" : "block px-5.5 font-serif text-[19px] leading-[1.22] text-navy"}>
-                  {pick(p.name, p.name_ur)}
+                <span lang={isUr&&p.name_ur?"ur":"en"} dir={isUr&&p.name_ur?"rtl":"ltr"} className={isUr&&Boolean(p.name_ur) ? "block px-5.5 font-urdu text-[18px] leading-[2.1] text-navy" : "block px-5.5 font-serif text-[19px] leading-[1.22] text-navy"}>
+                  <FieldText en={p.name} ur={p.name_ur} serif/>
                 </span>
-                <span className={isUr ? "block px-5.5 font-urdu text-[12.5px] leading-[2.2] text-slate" : "block px-5.5 text-[13px] leading-relaxed text-slate"}>
-                  {pick(p.description, p.description_ur)}
+                <span lang={isUr&&p.description_ur?"ur":"en"} dir={isUr&&p.description_ur?"rtl":"ltr"} className={isUr&&Boolean(p.description_ur) ? "block px-5.5 font-urdu text-[12.5px] leading-[2.2] text-slate" : "block px-5.5 text-[13px] leading-relaxed text-slate"}>
+                  <FieldText en={p.description} ur={p.description_ur}/>
                 </span>
                 <span className="flex-1" />
                 <span className="mx-5.5 flex items-center justify-between gap-2.5 border-t border-line-soft pt-3 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal">
@@ -316,7 +317,7 @@ export default function HomeClient({
             ))}
           </div>
         </div>
-      </section>
+      </section>}
     </div>
   );
 }

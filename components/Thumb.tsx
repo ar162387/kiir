@@ -43,6 +43,7 @@ export default function Thumb({
   return (
     <div className={`relative flex-none overflow-hidden bg-thumb ${widthClass} ${heightClass}`}>
       <Image
+        unoptimized={src.startsWith("https://res.cloudinary.com/")}
         src={src}
         alt={alt}
         fill

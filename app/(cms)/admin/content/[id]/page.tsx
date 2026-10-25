@@ -1,0 +1,7 @@
+import {notFound} from 'next/navigation';
+import ContentEditor from '@/components/admin/ContentEditor';
+import {requireStaff} from '@/lib/cms/session';
+import {createStaffClient} from '@/lib/supabase/auth';
+import {getReadyImages} from '@/lib/cms/media-queries';
+import {validUUID,type ContentRecord} from '@/lib/cms/content-types';
+export default async function EditContent({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{notice?:string}>}){const member=await requireStaff('content.edit');const{id}=await params;if(!validUUID(id))notFound();const {notice}=await searchParams;const client=await createStaffClient();const[{data:record,error},{data:programs},images]=await Promise.all([client.from('content_records').select('*').eq('id',id).maybeSingle(),client.from('programs').select('id,name,is_active').order('sort_order'),getReadyImages()]);if(error)throw Error('This article could not be loaded.');if(!record)notFound();return <><p className="cms-eyebrow">EDITORIAL</p><h1>Edit content</h1>{notice&&<p role="status" className="cms-feedback cms-feedback-success">{notice==='publish'?'Published. The public website now shows this version.':notice==='draft'?'Draft saved. The public version is unchanged.':notice==='archive'?'Archived. This article is hidden from the public website.':'Unpublished. Your working copy and files are retained.'}</p>}<ContentEditor key={`${id}-${record.version}`} record={record as ContentRecord} programs={programs??[]} images={images} canDelete={member.role==='admin'}/></>;}

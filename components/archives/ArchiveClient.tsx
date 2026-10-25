@@ -1,6 +1,11 @@
 "use client";
+import {useTransition} from "react";
+import {useRouter} from "next/navigation";
+import NavigationFeedback from "@/components/NavigationFeedback";
+import {localePath} from "@/lib/locale-path";
+import FieldText from "@/components/FieldText";
 
-import Link from "next/link";
+import Link from "@/components/LocalizedLink";
 import { useLanguage } from "@/components/LanguageProvider";
 import Thumb from "@/components/Thumb";
 import { formatDate } from "@/lib/format";
@@ -37,13 +42,14 @@ export default function ArchiveClient({
   showPublicationFilters?: boolean;
 }) {
   const { t, isUr, pick } = useLanguage();
+  const router=useRouter();const[pending,startTransition]=useTransition();
 
   const archiveHref = (kind: string, date: string) => {
     const params = new URLSearchParams();
     if (kind !== "all") params.set("kind", kind);
     if (date) params.set("date", date);
     const query = params.toString();
-    return `${basePath}${query ? `?${query}` : ""}`;
+    return localePath(`${basePath}${query ? `?${query}` : ""}`,isUr?'ur':'en');
   };
   const pageHref = (n: number) => {
     const params = new URLSearchParams();
@@ -57,6 +63,7 @@ export default function ArchiveClient({
 
   return (
     <div className="animate-[kiirFade_220ms_ease_both]">
+      <NavigationFeedback pending={pending}/>
       <section className="border-b border-line bg-tint">
         <div className="mx-auto max-w-[1520px] px-4 py-10 sm:px-6 sm:py-12">
           <h1 className={isUr ? "m-0 font-urdu text-[32px] leading-[2] text-navy" : "m-0 font-serif text-[clamp(30px,4vw,46px)] leading-[1.08] tracking-[-0.02em] text-navy"}>
@@ -71,12 +78,12 @@ export default function ArchiveClient({
       <div className="mx-auto max-w-[1520px] px-4 py-7.5 pb-16 sm:px-6">
         {showPublicationFilters ? <div className="flex flex-wrap items-center gap-3 border-b border-line pb-5.5">
           <label className="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal">Publication type
-            <select value={publicationKind} onChange={(event) => { window.location.href = archiveHref(event.target.value, dateFilter); }} className="ml-2 border border-line bg-surface px-3 py-2 font-sans text-[14px] normal-case tracking-normal text-navy">
+            <select value={publicationKind} onChange={(event) => { startTransition(()=>router.push(archiveHref(event.target.value, dateFilter))); }} className="ml-2 border border-line bg-surface px-3 py-2 font-sans text-[14px] normal-case tracking-normal text-navy">
               <option value="all">All publications</option><option value="opinion-articles">Opinion Articles</option><option value="research-papers">Research Papers</option><option value="short-stories">Short Stories</option><option value="newsletters">Newsletters</option>
             </select>
           </label>
           <label className="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal">Date
-            <input type="date" value={dateFilter} onChange={(event) => { window.location.href = archiveHref(publicationKind, event.target.value); }} className="ml-2 border border-line bg-surface px-3 py-2 font-sans text-[14px] normal-case tracking-normal text-navy" aria-label="Filter publications by date" />
+            <input type="date" value={dateFilter} onChange={(event) => { startTransition(()=>router.push(archiveHref(publicationKind, event.target.value))); }} className="ml-2 border border-line bg-surface px-3 py-2 font-sans text-[14px] normal-case tracking-normal text-navy" aria-label="Filter publications by date" />
           </label>
           <span className="flex-1" /><span className="font-mono text-[10.5px] text-muted">{total} {t.items}</span>
         </div> : <div className="flex justify-end border-b border-line pb-5.5"><span className="font-mono text-[10.5px] text-muted">{total} {t.items}</span></div>}
@@ -101,10 +108,10 @@ export default function ArchiveClient({
                     <span className="font-mono text-[9.5px] text-muted">{formatDate(it.item_date, isUr ? "ur" : "en")}</span>
                   </span>
                   <span className={isUr ? "mt-2 block font-urdu text-[17px] leading-[2.1] text-navy" : "mt-2 block font-serif text-[19px] leading-[1.25] text-navy"}>
-                    {pick(it.title, it.title_ur)}
+                    <FieldText en={it.title} ur={it.title_ur} serif/>
                   </span>
                   <span className={isUr ? "mt-2 block font-urdu text-[13px] leading-[2.2] text-slate" : "mt-2 block text-[13.5px] leading-relaxed text-slate"}>
-                    {pick(it.short_description, it.short_description_ur)}
+                    <FieldText en={it.short_description} ur={it.short_description_ur}/>
                   </span>
                 </span>
               </Link>

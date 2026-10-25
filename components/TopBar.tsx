@@ -16,23 +16,11 @@ export default function TopBar({ contact, social }: { contact: ContactSettings; 
   return (
     <div className="bg-navy text-[#C6D2E0]">
       <div className="mx-auto flex min-h-10 max-w-[1520px] flex-wrap items-center justify-between gap-4 px-4 sm:px-6">
-        <div className="flex items-center gap-2 py-2">
-          {socialLinks.map(({ label, href, Icon, className }) =>
-            href ? (
-              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className={`grid h-6 w-6 place-items-center rounded-full text-white ${className}`}>
-                <Icon size={12} />
-              </a>
-            ) : (
-              <span key={label} aria-label={`${label} link pending`} className={`grid h-6 w-6 place-items-center rounded-full text-white ${className}`}>
-                <Icon size={12} />
-              </span>
-            )
-          )}
-          <a href={`tel:${contact.phone.replace(/\s+/g, "")}`} className="ml-2 font-mono text-[12px] font-semibold tracking-[0.06em] text-white hover:text-cyan">
-            {contact.phone}
-          </a>
-        </div>
-        <div className="flex items-center gap-3.5 py-1.5">
+        {(socialLinks.some(s=>s.href)||contact.phone)&&<div className="flex items-center gap-2 py-2">
+          {socialLinks.filter(s=>s.href).map(({label,href,Icon,className})=><a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className={`grid h-6 w-6 place-items-center rounded-full text-white ${className}`}><Icon size={12}/></a>)}
+          {contact.phone&&<a href={`tel:${contact.phone.replace(/\s+/g,'')}`} className="ml-2 font-mono text-[12px] text-white hover:text-cyan">{contact.phone}</a>}
+        </div>}
+        <div className="ml-auto flex items-center gap-3.5 py-1.5">
           <div role="group" aria-label="Language" className="flex border border-white/[0.18]">
             <button
               type="button"

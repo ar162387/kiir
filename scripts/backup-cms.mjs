@@ -1,0 +1,13 @@
+import {spawnSync} from 'node:child_process';
+import {mkdirSync,chmodSync,writeFileSync} from 'node:fs';
+const connection=new URL(process.env.SUPABASE_DB_POOLER_URL);connection.password='';connection.searchParams.set('sslmode','require');connection.searchParams.set('connect_timeout','15');
+const env={...process.env,PGPASSWORD:process.env.SUPABASE_DATABASE_PASSWORD};
+if(!env.PGPASSWORD)throw Error('Database password required.');
+const directory='.cms-backups/'+new Date().toISOString().replace(/[:.]/g,'-');mkdirSync(directory,{recursive:true,mode:0o700});
+const dump=spawnSync(process.env.PG_DUMP_BIN||'pg_dump',['--dbname',connection.toString(),'--format=custom','--schema=public','--schema=cms_private','--no-owner','--exclude-table-data=cms_private.rate_limits','--exclude-table-data=cms_private.account_provisions','--file',directory+'/cms.dump'],{env,encoding:'utf8'});
+if(dump.status!==0)throw Error(dump.stderr||'Backup failed');chmodSync(directory+'/cms.dump',0o600);
+const ids=spawnSync('psql',['-X','--no-password','-tA',connection.toString(),'-c','select coalesce(json_agg(id),\'[]\'::json) from auth.users'],{env,encoding:'utf8'});if(ids.status!==0)throw Error('Auth identity manifest failed');
+writeFileSync(directory+'/auth-ids.json',JSON.stringify(JSON.parse(ids.stdout)),{mode:0o600});
+const guards=spawnSync('psql',['-X','--no-password','-tA',connection.toString(),'-c',"select pg_get_triggerdef(oid)||';' from pg_trigger where tgrelid='auth.users'::regclass and tgname='cms_staff_only_accounts'"],{env,encoding:'utf8'});if(guards.status!==0)throw Error('Auth guard export failed');writeFileSync(directory+'/auth-guards.sql',guards.stdout.trim()+'\n',{mode:0o600});
+writeFileSync(directory+'/README.txt','Private application-data backup. Contains staff identities and private content/messages. Keep encrypted and outside Git. It excludes Auth credentials, Vault secrets, Cloudinary binaries and provider configuration. Restore only into an isolated database using the documented runbook.\n',{mode:0o600});
+console.log('Private CMS backup created: '+directory);console.log('Auth identity IDs included for isolated restore integrity; no Auth credentials exported.');

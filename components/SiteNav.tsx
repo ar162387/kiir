@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/LocalizedLink";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -8,15 +8,15 @@ import { ChevronDown } from "@/components/icons";
 import type { Program } from "@/lib/types";
 
 const publicationLinks = [
-  { kind: "opinion-articles", label: "Opinion Articles" },
-  { kind: "research-papers", label: "Research Papers" },
-  { kind: "short-stories", label: "Short Stories" },
-  { kind: "newsletters", label: "Newsletters" },
+  { kind: "opinion-articles", label: "Opinion Articles",labelUr:"رائے کے مضامین" },
+  { kind: "research-papers", label: "Research Papers",labelUr:"تحقیقی مقالے" },
+  { kind: "short-stories", label: "Short Stories",labelUr:"مختصر کہانیاں" },
+  { kind: "newsletters", label: "Newsletters",labelUr:"نیوز لیٹر" },
 ];
 
 export default function SiteNav({ programs }: { programs: Program[] }) {
-  const { t } = useLanguage();
-  const pathname = usePathname();
+  const { t,pick } = useLanguage();
+  const pathname = usePathname().replace(/^\/ur(?=\/|$)/,'')||'/';
   const [publicationsOpen, setPublicationsOpen] = useState(false);
   const [programsOpen, setProgramsOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -28,6 +28,7 @@ export default function SiteNav({ programs }: { programs: Program[] }) {
     { href: "/about", label: t.about },
     { href: "/activities", label: t.activitiesNav },
     { href: "/events", label: t.eventsNav },
+    {href:"/contact",label:t.contactCol},
   ];
 
   useEffect(() => {
@@ -64,15 +65,15 @@ export default function SiteNav({ programs }: { programs: Program[] }) {
               {t.ourPrograms}<ChevronDown className={`transition-transform ${programsOpen ? "rotate-180" : ""}`} />
             </button>
             {programsOpen && <div className="absolute left-0 top-full z-50 w-72 overflow-hidden border border-blue-950/30 bg-white p-1.5 shadow-xl">
-              {programs.map((program) => <Link key={program.slug} href={`/programs/${program.slug}`} onClick={() => setProgramsOpen(false)} className="block px-4 py-3 text-[15px] font-semibold text-navy hover:bg-tint hover:text-teal">{program.name}</Link>)}
+              {programs.map((program) => <Link key={program.slug} href={`/programs/${program.slug}`} onClick={() => setProgramsOpen(false)} className="block px-4 py-3 text-[15px] font-semibold text-navy hover:bg-tint hover:text-teal">{pick(program.name,program.name_ur)}</Link>)}
             </div>}
           </div>
           <div className="relative" onMouseEnter={() => setPublicationsOpen(true)} onMouseLeave={() => setPublicationsOpen(false)}>
-            <button type="button" onClick={() => setPublicationsOpen((value) => !value)} aria-expanded={publicationsOpen} aria-controls={panelId} className={`${navClass(pathname === "/news" || publicationsOpen)} cursor-pointer gap-2`} style={navStyle(pathname === "/news" || publicationsOpen)}>
+            <button type="button" onClick={() => setPublicationsOpen((value) => !value)} aria-expanded={publicationsOpen} aria-controls={panelId} className={`${navClass(pathname === "/publications" || publicationsOpen)} cursor-pointer gap-2`} style={navStyle(pathname === "/publications" || publicationsOpen)}>
               {t.news}<ChevronDown className={`transition-transform ${publicationsOpen ? "rotate-180" : ""}`} />
             </button>
             {publicationsOpen && <div id={panelId} className="absolute left-0 top-full z-50 w-64 overflow-hidden border border-blue-950/30 bg-white p-1.5 shadow-xl">
-              {publicationLinks.map((item) => <Link key={item.kind} href={`/news?kind=${item.kind}`} onClick={() => setPublicationsOpen(false)} className="block px-4 py-3 text-[15px] font-semibold text-navy hover:bg-tint hover:text-teal">{item.label}</Link>)}
+              {publicationLinks.map((item) => <Link key={item.kind} href={`/publications?kind=${item.kind}`} onClick={() => setPublicationsOpen(false)} className="block px-4 py-3 text-[15px] font-semibold text-navy hover:bg-tint hover:text-teal">{pick(item.label,item.labelUr)}</Link>)}
             </div>}
           </div>
         </div>
@@ -90,9 +91,9 @@ export default function SiteNav({ programs }: { programs: Program[] }) {
             <div className="flex flex-col p-3">
               {links.map((link, index) => <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} ref={index === 0 ? firstDrawerLinkRef : undefined} className="border-b border-line px-3 py-3 font-display text-[14px] uppercase text-navy">{link.label}</Link>)}
               <span className="px-3 pt-5 font-display text-[14px] uppercase text-navy">{t.ourPrograms}</span>
-              {programs.map((program) => <Link key={program.slug} href={`/programs/${program.slug}`} onClick={() => setMobileOpen(false)} className="border-b border-line px-5 py-2.5 text-[15px] font-semibold text-slate">{program.name}</Link>)}
-              <Link href="/news" onClick={() => setMobileOpen(false)} className="px-3 pt-5 font-display text-[14px] uppercase text-navy">{t.news}</Link>
-              {publicationLinks.map((item) => <Link key={item.kind} href={`/news?kind=${item.kind}`} onClick={() => setMobileOpen(false)} className="border-b border-line px-5 py-2.5 text-[15px] font-semibold text-slate">{item.label}</Link>)}
+              {programs.map((program) => <Link key={program.slug} href={`/programs/${program.slug}`} onClick={() => setMobileOpen(false)} className="border-b border-line px-5 py-2.5 text-[15px] font-semibold text-slate">{pick(program.name,program.name_ur)}</Link>)}
+              <Link href="/publications" onClick={() => setMobileOpen(false)} className="px-3 pt-5 font-display text-[14px] uppercase text-navy">{t.news}</Link>
+              {publicationLinks.map((item) => <Link key={item.kind} href={`/publications?kind=${item.kind}`} onClick={() => setMobileOpen(false)} className="border-b border-line px-5 py-2.5 text-[15px] font-semibold text-slate">{pick(item.label,item.labelUr)}</Link>)}
             </div>
           </div>
         </div>

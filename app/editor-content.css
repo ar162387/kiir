@@ -1,0 +1,23 @@
+/* One typography contract for the authoring surface, preview and public article. */
+.editor-prose.editor-prose {font-family:var(--font-source-serif),Georgia,serif;color:#213038;font-size:18px;line-height:1.8;overflow-wrap:anywhere;min-width:0;}
+.editor-prose.editor-prose[lang=ur]{font-family:var(--font-nastaliq),serif;line-height:2.5;}
+.editor-prose.editor-prose p{margin:0 0 1.15em;font:inherit;line-height:inherit;color:inherit;}
+.editor-prose.editor-prose h2,.editor-prose.editor-prose h3,.editor-prose.editor-prose h4{font-family:inherit;line-height:1.35;color:#152e3a;font-weight:700;margin:1.5em 0 .6em;}
+.editor-prose.editor-prose h2{font-size:1.65em}.editor-prose.editor-prose h3{font-size:1.3em}.editor-prose.editor-prose h4{font-size:1.1em}
+.editor-prose.editor-prose strong{font-weight:700}.editor-prose.editor-prose em{font-style:italic}.editor-prose.editor-prose u{text-decoration:underline}.editor-prose.editor-prose s{text-decoration:line-through}
+.editor-prose.editor-prose sup{vertical-align:super;font-size:.75em;line-height:0}.editor-prose.editor-prose sub{vertical-align:sub;font-size:.75em;line-height:0}
+.editor-prose.editor-prose a{color:#167b88;text-decoration:underline;text-underline-offset:3px}
+.editor-prose.editor-prose ul{list-style:disc}.editor-prose.editor-prose ol{list-style:decimal}.editor-prose.editor-prose ul,.editor-prose.editor-prose ol{padding-inline-start:1.7em;margin:0 0 1.2em}.editor-prose.editor-prose li{margin:.3em 0}.editor-prose.editor-prose li p{margin:.3em 0}
+.editor-prose.editor-prose blockquote{border-inline-start:3px solid #289eaa;padding:.5em 1.4em;margin:1.5em 0;background:#f1f6f7;font-style:italic;font-size:1.1em;}
+.editor-prose.editor-prose hr{border:0;border-top:1px solid #bbcdd1;width:40%;margin:2.2em auto}
+.editor-prose.editor-prose .editor-table-scroll,.editor-prose.editor-prose .tableWrapper{overflow-x:auto;max-width:100%;margin:1.6em 0;}
+.editor-prose.editor-prose table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:320px;font-size:.9em;}
+.editor-prose.editor-prose td,.editor-prose.editor-prose th{border:1px solid #b8c8ce;padding:.65em .85em;vertical-align:top;position:relative;min-width:70px;}
+.editor-prose.editor-prose th{background:#eaf2f4;font-weight:700;text-align:start}.editor-prose.editor-prose td p,.editor-prose.editor-prose th p{margin:0;}
+.editor-prose.editor-prose figure{margin:1.6em 0;}.editor-prose.editor-prose img{display:block;max-width:100%;height:auto;margin:0 auto;}.editor-prose.editor-prose figcaption{font-family:var(--font-plex-sans),sans-serif;font-size:13px;line-height:1.6;color:#566b75;margin:.7em 0;text-align:center;}
+.editor-prose.editor-prose .selectedCell{background:#cceef2}.editor-prose.editor-prose .column-resize-handle{position:absolute;right:-2px;top:0;bottom:0;width:4px;background:#289eaa}.editor-prose.editor-prose.resize-cursor{cursor:col-resize}
+.editor-prose.publication-research{max-width:780px}.editor-prose.publication-story{max-width:650px;font-size:20px;line-height:1.95}.editor-prose.publication-newsletter h2{border-top:3px solid #2a9eaa;padding-top:.8em}.publication-meta{margin:1.4em 0;padding:1.2em;border-block:1px solid #cdd8dc;background:#f3f7f8;}.publication-meta h2{font-size:1.2em;margin:0 0 .5em}.publication-meta p{white-space:pre-wrap}.publication-references{white-space:pre-wrap;font-size:.9em;border-top:1px solid #cdd8dc;margin-top:2em;padding-top:1em}.publication-epigraph{font-style:italic;text-align:center;white-space:pre-wrap;margin:2em 0;}.content-event-details{padding:1.2em;border:1px solid #cdd8dc;margin:1.5em 0;}.content-gallery{display:grid;gap:1.5em;margin-top:2em;}
+@media(max-width:600px){.editor-prose.editor-prose{font-size:17px}.editor-prose.editor-prose td,.editor-prose.editor-prose th{padding:.45em}.editor-prose.publication-story{font-size:18px}}
+
+.editor-prose.editor-prose th{text-transform:none;letter-spacing:normal}.editor-prose.editor-prose h2,.editor-prose.editor-prose h3,.editor-prose.editor-prose h4{scroll-margin-top:125px}
+.editor-prose.editor-prose td,.editor-prose.editor-prose th{font-family:inherit;font-size:inherit;line-height:inherit;color:inherit}.publication-meta.publication-meta h2{font-family:var(--font-source-serif),Georgia,serif;font-size:1.2em;line-height:1.35;font-weight:700;margin:0 0 .5em}.content-event-details.content-event-details h2{font-family:var(--font-source-serif),Georgia,serif;font-size:1.2em;line-height:1.35;margin:0 0 .75em}

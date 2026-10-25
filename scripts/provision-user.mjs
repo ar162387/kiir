@@ -1,0 +1,1 @@
+export async function provisionUser(client,values){const{data:nonce,error}=await client.rpc('cms_authorize_account',{account_email:values.email});if(error)return {data:{user:null},error};return client.auth.admin.createUser({...values,id:nonce});}
