@@ -50,7 +50,7 @@ export default function SiteFooter({
             <Link href="/" className="text-[#B9C7D6] hover:text-white">
               {t.home}
             </Link>
-            <Link href="/contact">{t.contactCol}</Link>
+            <Link href="/contact" className="text-[#B9C7D6] hover:text-white">{t.contactCol}</Link>
             <Link href="/about" className="text-[#B9C7D6] hover:text-white">
               {t.about}
             </Link>
