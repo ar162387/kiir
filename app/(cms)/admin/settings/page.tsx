@@ -12,5 +12,5 @@ export default async function SettingsPage(){
  if(error)throw Error('Website settings could not be loaded.');
  const rows=(data as SettingRow[]).filter(row=>hasPermission(member.role,settingPermission(row.key)));
  const order=['contact','social','ticker','org','about'];rows.sort((a,b)=>order.indexOf(a.key)-order.indexOf(b.key));
- return <><p className="cms-eyebrow">WEBSITE</p><h1>Website settings</h1><p className="cms-description">Manage announcements, public contact details and site information.</p><nav aria-label="Settings sections" className="cms-settings-actions">{rows.map(r=><a key={r.key} href={`#${r.key}`}>{r.key==='org'?'Organization':r.key==='ticker'?'Announcements':r.key}</a>)}</nav>{rows.map(row=><SettingsEditor key={row.key} row={row} images={images}/>)}</>;
+ return <><p className="cms-eyebrow">WEBSITE</p><h1>Website settings</h1><p className="cms-description">Manage announcements, public contact details and site information.</p><nav aria-label="Settings sections" className="cms-settings-nav">{rows.map(r=><a key={r.key} href={`#${r.key}`}>{r.key==='org'?'Organization':r.key==='ticker'?'Announcements':r.key}</a>)}</nav>{rows.map(row=><SettingsEditor key={row.key} row={row} images={images}/>)}</>;
 }

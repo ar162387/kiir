@@ -211,3 +211,26 @@ header navigation, publication filters, EN→UR navigation and a subsequent Urdu
 filter all retained the correct URL/content and cleared the top line. Reduced
 motion disabled its animation. CMS navigation and a real unchanged contact
 settings save showed the working state and prevented repeat submission.
+
+## CMS form clarity and expanding text fields
+
+The CMS now applies shared label/control styles to all internal forms, including
+content filters and settings. Fields have visible borders, consistent focus
+states, labels above values, and predictable section/action spacing. Content
+language tabs, nested announcement parts, destructive buttons and the current
+sidebar destination are visually distinct. The organization logo uses a
+contained preview with upload controls alongside it on wider screens.
+
+Editorial/settings text fields soft-wrap and grow vertically to show their full
+values, then shrink when text is shortened. Width changes and hidden language
+tabs trigger remeasurement. Single-line values retain their original semantics;
+visual wrapping does not insert saved line breaks. Password, date, number and
+other typed controls retain their appropriate native input behavior.
+
+Chrome review covered 12 internal routes: overview, content list/new editor,
+program list/new editor, media, settings, staff guide, account, staff access,
+audit and inbox. Visible controls had labels and borders, and desktop pages had
+no horizontal overflow. A long organization name grew and shrank without
+clipping at desktop and narrower widths. A disposable long-title draft survived
+save/reload/private preview unchanged, then was deleted. Public settings were
+not saved or altered during the design checks.

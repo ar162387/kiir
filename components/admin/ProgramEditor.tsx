@@ -6,6 +6,7 @@ import SubmitButton from '@/components/SubmitButton';
 import { saveProgram, deleteProgram } from '@/lib/cms/program-actions';
 import { slugifyProgram, type ManagedProgram, type MediaImage } from '@/lib/cms/program-types';
 import ImagePicker from './ImagePicker';
+import AutoGrowTextarea from './AutoGrowTextarea';
 
 function Submit({busy,label}:{busy?:boolean;label:string}) {
   return <SubmitButton className="cms-button" disabled={busy} pendingLabel="Saving…">{busy?'Wait for image upload…':label}</SubmitButton>;
@@ -29,16 +30,16 @@ export default function ProgramEditor({program,images,canDelete}:{program?:Manag
       <section className="cms-panel">
         <div className="cms-language-tabs" role="group" aria-label="Content language"><button type="button" aria-pressed={tab==='en'} onClick={()=>setTab('en')}>English</button><button type="button" aria-pressed={tab==='ur'} onClick={()=>setTab('ur')}>اردو <span>Optional</span></button></div>
         <div className="cms-form" hidden={tab!=='en'}>
-          <label>Program name<input name="name" required={tab==='en'} maxLength={160} value={values.name} onChange={e=>{change('name',e.target.value);if(!slugEdited)change('slug',slugifyProgram(e.target.value));}}/></label>
-          <label>Short description<textarea name="description" required={tab==='en'} maxLength={600} rows={3} value={values.description} onChange={e=>change('description',e.target.value)}/></label>
-          <label>Program introduction <span className="cms-optional">Optional</span><textarea name="long_description" maxLength={6000} rows={7} value={values.long_description} onChange={e=>change('long_description',e.target.value)}/></label>
+          <label>Program name<AutoGrowTextarea singleLine name="name" required={tab==='en'} maxLength={160} value={values.name} onChange={e=>{change('name',e.target.value);if(!slugEdited)change('slug',slugifyProgram(e.target.value));}}/></label>
+          <label>Short description<AutoGrowTextarea name="description" required={tab==='en'} maxLength={600} rows={3} value={values.description} onChange={e=>change('description',e.target.value)}/></label>
+          <label>Program introduction <span className="cms-optional">Optional</span><AutoGrowTextarea name="long_description" maxLength={6000} rows={7} value={values.long_description} onChange={e=>change('long_description',e.target.value)}/></label>
           <p className="cms-help">The introduction appears at the top of the program page. If left empty, the short description is used.</p>
         </div>
         <div className="cms-form" hidden={tab!=='ur'}>
           <p className="cms-help">Add Urdu where available. Empty fields display the English version.</p>
-          <label>Urdu name<input name="name_ur" lang="ur" dir="rtl" maxLength={160} value={values.name_ur} onChange={e=>change('name_ur',e.target.value)}/></label>
-          <label>Urdu short description<textarea name="description_ur" lang="ur" dir="rtl" maxLength={600} rows={3} value={values.description_ur} onChange={e=>change('description_ur',e.target.value)}/></label>
-          <label>Urdu program introduction<textarea name="long_description_ur" lang="ur" dir="rtl" maxLength={6000} rows={7} value={values.long_description_ur} onChange={e=>change('long_description_ur',e.target.value)}/></label>
+          <label>Urdu name<AutoGrowTextarea singleLine name="name_ur" lang="ur" dir="rtl" maxLength={160} value={values.name_ur} onChange={e=>change('name_ur',e.target.value)}/></label>
+          <label>Urdu short description<AutoGrowTextarea name="description_ur" lang="ur" dir="rtl" maxLength={600} rows={3} value={values.description_ur} onChange={e=>change('description_ur',e.target.value)}/></label>
+          <label>Urdu program introduction<AutoGrowTextarea name="long_description_ur" lang="ur" dir="rtl" maxLength={6000} rows={7} value={values.long_description_ur} onChange={e=>change('long_description_ur',e.target.value)}/></label>
         </div>
         <div className="cms-form cms-program-url"><label>Program URL<input name="slug" required maxLength={100} pattern="[a-z0-9]+(-[a-z0-9]+)*" value={values.slug} onChange={e=>{setSlugEdited(true);change('slug',e.target.value);}}/></label><p className="cms-help">/programs/{values.slug||'your-program'}{program?' · Previous URLs redirect automatically after a change.':''}</p></div>
       </section>

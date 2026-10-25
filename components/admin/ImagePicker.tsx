@@ -22,7 +22,7 @@ async function optimizeImage(file:File) {
   } finally {bitmap.close();}
 }
 
-export default function ImagePicker({assetId,url,images,onChange,onBusy}:{assetId:string|null;url:string|null;images:MediaImage[];
+export default function ImagePicker({assetId,url,images,onChange,onBusy,variant='image'}:{variant?:'image'|'logo';assetId:string|null;url:string|null;images:MediaImage[];
   onChange:(id:string|null,url:string|null)=>void;onBusy:(busy:boolean)=>void}) {
   const input=useRef<HTMLInputElement>(null);
   const [busy,setBusy]=useState(false);
@@ -60,12 +60,12 @@ export default function ImagePicker({assetId,url,images,onChange,onBusy}:{assetI
     } catch(e) {setError(e instanceof Error?e.message:'The image could not be uploaded.');setProgress('');}
     finally {setBusy(false);onBusy(false);if(input.current)input.current.value='';}
   }
-  return <div className="cms-image-picker">
+  return <div className={`cms-image-picker cms-image-picker-${variant}`}>
     {url?<div className="cms-image-preview">
-      <Image unoptimized src={url} width={640} height={360} alt="Selected image preview" />
+      <Image unoptimized src={url} width={640} height={360} alt={variant==='logo'?'Organization logo preview':'Selected image preview'} />
       <button type="button" className="cms-image-remove" disabled={busy} onClick={()=>{onChange(null,null);setProgress('Image will be removed when you save.');}}>Remove image</button>
-    </div>:<div className="cms-image-empty">Add a photo for this content.</div>}
-    <label>Upload image<input ref={input} type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);}} /></label>
+    </div>:<div className="cms-image-empty">{variant==='logo'?'Choose an organization logo.':'Add a photo for this content.'}</div>}
+    <label>{variant==='logo'?'Upload logo':'Upload image'}<input ref={input} type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);}} /></label>
     <p className="cms-help">JPG, PNG, or WebP. Images are resized and optimized automatically. Changes take effect when you save.</p>
     {images.length>0&&<label>Or reuse an existing image<select disabled={busy} value={images.some(i=>i.id===assetId)?assetId??'':''} onChange={e=>{const image=images.find(i=>i.id===e.target.value);if(image)onChange(image.id,imageDeliveryUrl(image));}}><option value="">Choose from uploaded images</option>{images.map(image=><option key={image.id} value={image.id}>{image.original_filename||'Uploaded image'}</option>)}</select></label>}
     <p className="cms-help" aria-live="polite">{progress}</p>
