@@ -18,7 +18,7 @@ export function publicContent(d:ContentDraft,slug:string,date:string,categories:
  event_start:eventStart,event_end:d.event_end,event_zone:d.event_zone,event_status:d.event_status,
  event_venue:detail?d.event_venue:undefined,event_url:detail&&/^https?:\/\//i.test(d.event_url)?d.event_url:undefined,
  registration_url:detail&&/^https?:\/\//i.test(d.registration_url)?d.registration_url:undefined,
- authors:detail?d.authors:undefined,abstract:detail?d.abstract:undefined,keywords:detail?d.keywords:undefined,references:detail?d.references:undefined,issue:detail?d.issue:undefined,epigraph:detail?d.epigraph:undefined,
+ authors:d.authors,abstract:detail?d.abstract:undefined,keywords:detail?d.keywords:undefined,references:detail?d.references:undefined,issue:detail?d.issue:undefined,epigraph:detail?d.epigraph:undefined,
  document_url:detail&&d.document_id&&assets[d.document_id]?`/api/documents/${escapeHtml(d.document_id)}`:undefined,
  document_ur_url:detail&&translated&&d.document_ur_id&&assets[d.document_ur_id]?`/api/documents/${escapeHtml(d.document_ur_id)}`:undefined,
  contents:detail&&d.body?documentHeadings(d.body):[],contents_ur:detail&&translated&&d.body_ur?documentHeadings(d.body_ur):[],gallery,seo_title:d.seo_title,seo_description:d.seo_description};
