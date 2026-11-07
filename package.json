@@ -18,7 +18,8 @@
     "test:settings:integration": "node --env-file=.env --env-file-if-exists=.env.local scripts/test-settings.mjs",
     "cms:backup": "node --env-file=.env --env-file-if-exists=.env.local scripts/backup-cms.mjs",
     "cms:health": "node --env-file=.env --env-file-if-exists=.env.local scripts/cms-health.mjs",
-    "check:release": "node --env-file=.env --env-file-if-exists=.env.local scripts/check-release.mjs"
+    "check:release": "node --env-file=.env --env-file-if-exists=.env.local scripts/check-release.mjs",
+    "prebuild": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-cms-schema.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.4",
