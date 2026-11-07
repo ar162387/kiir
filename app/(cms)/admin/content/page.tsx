@@ -16,7 +16,7 @@ export default async function ContentList({searchParams}:{searchParams:Promise<C
   client.from('programs').select('id,name').order('sort_order')
  ]);
  return <>
-  <header className="cms-page-heading"><div><p className="cms-eyebrow">EDITORIAL</p><h1>Content</h1></div><Link className="cms-button" href="/admin/content/new">Create content +</Link></header>
+  <header className="cms-page-heading"><div><p className="cms-eyebrow">EDITORIAL</p><h1>Content</h1></div><Link className="cms-button" href="/admin/content/new" prefetch={true}>Create content +</Link></header>
   {notice==='deleted'&&<p role="status" className="cms-feedback cms-feedback-success">Content deleted. Unused files are queued for cleanup.</p>}
   <form className="cms-panel cms-content-filters" method="get">
    <label>Search title<input name="q" defaultValue={q} maxLength={150}/></label>

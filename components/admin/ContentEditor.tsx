@@ -5,13 +5,18 @@ import {eventLocal,eventInstant} from '@/lib/cms/event-time';
 import {saveContent} from '@/lib/cms/content-actions';
 import {emptyDraft,pdfOnly,publicationLabels,type ContentDraft,type ContentRecord,type PublicationCategory} from '@/lib/cms/content-types';
 import {imageDeliveryUrl,type MediaImage} from '@/lib/cms/program-types';
-import RichTextEditor from './RichTextEditor';
+import dynamic from 'next/dynamic';
+import ProgramSelector from './ProgramSelector';
+
+const RichTextEditor=dynamic(()=>import('./RichTextEditor'),{
+ ssr:false,loading:()=> <p role="status" className="cms-help">Loading article editor…</p>,
+});
 import ImagePicker from './ImagePicker';
 import ImageLibrary from './ImageLibrary';
 import DocumentPicker from './DocumentPicker';
 import AutoGrowTextarea from './AutoGrowTextarea';
 
-export default function ContentEditor({record,programs,images,canDelete=false}:{record?:ContentRecord;programs:{id:string;name:string;is_active:boolean}[];images:MediaImage[];canDelete?:boolean}){
+export default function ContentEditor({record,programs,images=[],canDelete=false}:{record?:ContentRecord;programs?:{id:string;name:string;is_active:boolean}[];images?:MediaImage[];canDelete?:boolean}){
  const [d,setD]=useState<ContentDraft>({...emptyDraft(),...record?.draft});const [state,action,pending]=useActionState(saveContent,{});
  const [eventError,setEventError]=useState('');
  const [language,setLanguage]=useState<'en'|'ur'>('en');const [dirty,setDirty]=useState(false);const [uploads,setUploads]=useState<Record<string,boolean>>({});
@@ -55,7 +60,7 @@ export default function ContentEditor({record,programs,images,canDelete=false}:{
    asset_urls:{...d.asset_urls,...Object.fromEntries(additions.map(image=>[image.id,imageDeliveryUrl(image)]))}});
  }}/>}
  </section>}
- <fieldset className="cms-panel"><legend>Programs (optional)</legend><div className="cms-check-grid">{programs.map(p=><label className="cms-checkbox" key={p.id}><input type="checkbox" checked={d.program_ids.includes(p.id)} onChange={e=>update({program_ids:e.target.checked?[...d.program_ids,p.id]:d.program_ids.filter(id=>id!==p.id)})}/>{p.name}{!p.is_active?' (hidden)':''}</label>)}</div></fieldset>
+ <ProgramSelector initialPrograms={programs} selected={d.program_ids} onChange={program_ids=>update({program_ids})}/>
  <details className="cms-panel"><summary>Advanced publishing settings</summary>{input('slug','Page address (generated from title if blank)',false,100)}<p className="cms-help">Search title and description are optional. The article title and summary are used automatically when these are empty. Published articles enter the sitemap automatically; drafts stay private. Search engines decide indexing and rankings.</p><label className="cms-checkbox"><input type="checkbox" checked={d.is_featured} onChange={e=>update({is_featured:e.target.checked})}/>Feature on homepage</label><label>Feature order<input type="number" min={0} max={9999} value={d.feature_order} onChange={e=>update({feature_order:Number(e.target.value)})}/></label>{input('seo_title','Search title (optional)',false,240)}{input('seo_description','Search description (optional)',true,500)}</details>
  <div className="cms-publish-bar" aria-busy={pending}><button className="cms-secondary-button" name="operation" value="draft" disabled={busy||pending}>{pending?'Saving…':'Save draft'}</button><button className="cms-button" name="operation" value="publish" disabled={busy||pending}>{pending?'Working…':record?.status==='published'?'Publish changes':'Publish'}</button>{busy&&<span role="status">Finish uploads before saving.</span>}{record?.status==='published'&&<button name="operation" value="unpublish" disabled={busy||pending}>Unpublish</button>}{record&&<button name="operation" value="archive" disabled={busy||pending}>Archive</button>}</div>
  {record&&canDelete&&<details className="cms-panel cms-danger-zone"><summary>Permanent deletion</summary><p>This permanently removes the article and queues its unused files for deletion. Archive keeps it recoverable.</p><label className="cms-checkbox"><input name="confirm" type="checkbox"/>Permanently delete this article and its unused files</label><button name="operation" value="delete" className="cms-danger-button" disabled={busy||pending}>Delete permanently</button></details>}
