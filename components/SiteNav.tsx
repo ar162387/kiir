@@ -8,6 +8,7 @@ import { ChevronDown } from "@/components/icons";
 import type { Program } from "@/lib/types";
 
 const publicationLinks = [
+  {kind:"reports",label:"Reports",labelUr:"رپورٹس"},
   { kind: "opinion-articles", label: "Opinion Articles",labelUr:"رائے کے مضامین" },
   { kind: "research-papers", label: "Research Papers",labelUr:"تحقیقی مقالے" },
   { kind: "short-stories", label: "Short Stories",labelUr:"مختصر کہانیاں" },
@@ -19,6 +20,8 @@ export default function SiteNav({ programs }: { programs: Program[] }) {
   const pathname = usePathname().replace(/^\/ur(?=\/|$)/,'')||'/';
   const [publicationsOpen, setPublicationsOpen] = useState(false);
   const [programsOpen, setProgramsOpen] = useState(false);
+  const [mediaOpen,setMediaOpen]=useState(false);
+  const mediaLinks=[{href:"/gallery",label:pick("Photo Gallery","تصویری گیلری")},{href:"/documentaries",label:pick("Documentaries","دستاویزی فلمیں")}];
   const [mobileOpen, setMobileOpen] = useState(false);
   const panelId = useId();
   const firstDrawerLinkRef = useRef<HTMLAnchorElement>(null);
@@ -26,9 +29,7 @@ export default function SiteNav({ programs }: { programs: Program[] }) {
   const links = [
     { href: "/", label: t.home },
     { href: "/about", label: t.about },
-    { href: "/activities", label: t.activitiesNav },
     { href: "/events", label: t.eventsNav },
-    {href:"/contact",label:t.contactCol},
   ];
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function SiteNav({ programs }: { programs: Program[] }) {
   return (
     <nav aria-label="Primary" className="kiir-primary-nav border-b shadow-[0_1px_0_rgba(16,36,59,0.08)]" style={{ backgroundColor: "#083d6c", borderColor: "#052e53" }}>
       <div className="mx-auto flex max-w-[1520px] items-stretch px-4 sm:px-6">
-        <div className="hidden items-stretch gap-1 py-1.5 md:flex">
+        <div className="hidden w-full items-stretch gap-1 py-1.5 md:flex">
           {links.map((link) => (
             <Link key={link.href} href={link.href} className={navClass(pathname === link.href)} style={navStyle(pathname === link.href)}>{link.label}</Link>
           ))}
@@ -76,6 +77,11 @@ export default function SiteNav({ programs }: { programs: Program[] }) {
               {publicationLinks.map((item) => <Link key={item.kind} href={`/publications?kind=${item.kind}`} onClick={() => setPublicationsOpen(false)} className="block px-4 py-3 text-[15px] font-semibold text-navy hover:bg-tint hover:text-teal">{pick(item.label,item.labelUr)}</Link>)}
             </div>}
           </div>
+          <div className="relative" onKeyDown={e=>{if(e.key==='Escape')setMediaOpen(false);}}>
+            <button type="button" aria-expanded={mediaOpen} className={navClass(mediaOpen||mediaLinks.some(link=>pathname.startsWith(link.href)))} style={navStyle(mediaOpen)} onClick={()=>setMediaOpen(!mediaOpen)}>{pick("Media","میڈیا")} <ChevronDown /></button>
+            {mediaOpen&&<div className="absolute start-0 top-full z-50 w-56 border border-line bg-white p-1.5 shadow-xl">{mediaLinks.map(link=><Link key={link.href} href={link.href} className="block px-4 py-3 text-navy hover:bg-tint" onClick={()=>setMediaOpen(false)}>{link.label}</Link>)}</div>}
+          </div>
+          <Link href="/contact" className={`ms-auto ${navClass(pathname==='/contact')}`} style={navStyle(pathname==='/contact')}>{t.contactCol}</Link>
         </div>
 
         <button type="button" onClick={() => setMobileOpen(true)} aria-haspopup="dialog" aria-label="Open menu" className="flex h-12 min-w-12 items-center justify-center text-white md:hidden">
@@ -94,6 +100,8 @@ export default function SiteNav({ programs }: { programs: Program[] }) {
               {programs.map((program) => <Link key={program.slug} href={`/programs/${program.slug}`} onClick={() => setMobileOpen(false)} className="border-b border-line px-5 py-2.5 text-[15px] font-semibold text-slate">{pick(program.name,program.name_ur)}</Link>)}
               <Link href="/publications" onClick={() => setMobileOpen(false)} className="px-3 pt-5 font-display text-[14px] uppercase text-navy">{t.news}</Link>
               {publicationLinks.map((item) => <Link key={item.kind} href={`/publications?kind=${item.kind}`} onClick={() => setMobileOpen(false)} className="border-b border-line px-5 py-2.5 text-[15px] font-semibold text-slate">{pick(item.label,item.labelUr)}</Link>)}
+              {mediaLinks.map(link=><Link key={link.href} href={link.href} onClick={()=>setMobileOpen(false)} className="border-b border-line px-3 py-3 font-display uppercase text-navy">{link.label}</Link>)}
+              <Link href="/contact" onClick={()=>setMobileOpen(false)} className="border-b border-line px-3 py-3 font-display uppercase text-navy">{t.contactCol}</Link>
             </div>
           </div>
         </div>

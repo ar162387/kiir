@@ -7,6 +7,8 @@ const nextConfig:NextConfig={
   {source:'/blogs',destination:'/publications?kind=opinion-articles',permanent:true},
   {source:'/Research-Paper',destination:'/publications?kind=research-papers',permanent:true},
   {source:'/research-paper',destination:'/publications?kind=research-papers',permanent:true},
+  {source:'/activities',destination:'/events',permanent:true},
+  {source:'/ur/activities',destination:'/ur/events',permanent:true},
   {source:'/past-events',destination:'/events',permanent:true},
  ];},
  async headers(){return [{source:'/:path*',headers:[{key:'X-Content-Type-Options',value:'nosniff'},{key:'Referrer-Policy',value:'strict-origin-when-cross-origin'},{key:'X-Frame-Options',value:'DENY'},{key:'Permissions-Policy',value:'camera=(), microphone=(), geolocation=()'}]}];},

@@ -13,6 +13,7 @@ export const publicationSearch={
  'opinion-articles':{en:'Opinion Articles',ur:'رائے کے مضامین',description:'Analysis, commentary and perspectives on Kashmir, human rights and regional peace from KIIR.'},
  'research-papers':{en:'Research Papers',ur:'تحقیقی مقالے',description:'Research papers on Kashmir, international relations, human rights and peacebuilding from KIIR.'},
  'short-stories':{en:'Short Stories',ur:'مختصر کہانیاں',description:'Short stories and personal narratives published by the Kashmir Institute of International Relations.'},
+ reports:{en:'Reports',ur:'رپورٹس',description:'Download reports from KIIR.'},
  newsletters:{en:'Newsletters',ur:'نیوز لیٹر',description:'KIIR newsletters covering research, activities, dialogue and advocacy.'},
 } as const;
 export function articleGraph(item:ContentItem,requested:Lang,origin:string,publisher={name:'Kashmir Institute of International Relations',logo:'/icon.png'}){

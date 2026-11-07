@@ -1,5 +1,6 @@
 import {notFound} from 'next/navigation';
 import {archivePage,paginatedPath} from '@/lib/seo-content';
+import {getPageHero} from "@/lib/queries";
 import {pageMetadata} from "@/lib/seo";
 import ArchiveClient from "@/components/archives/ArchiveClient";
 import { getItemsByType } from "@/lib/queries";
@@ -13,11 +14,12 @@ export default async function EventsPage({
 }) {
   const sp = await searchParams;
   const page = archivePage(sp.page);
+  const hero=await getPageHero("events");
   const result = await getItemsByType("event", { category: sp.category, page, pageSize: 9 });
   if(page>result.pageCount)notFound();
 
   return (
-    <ArchiveClient
+    <ArchiveClient hero={hero}
       basePath="/events"
       titleEn="Events"
       titleUr="تقریبات"

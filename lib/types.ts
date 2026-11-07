@@ -2,7 +2,7 @@
 // keep the two in sync; this is the schema's TypeScript face, not a separate model.
 
 export type ContentType = "article" | "activity" | "event" | "news_publication" | "publication" | "page";
-export type PublicationKind = "opinion-articles" | "research-papers" | "short-stories" | "newsletters";
+export type PublicationKind = "opinion-articles" | "research-papers" | "short-stories" | "newsletters" | "reports";
 
 export type Lang = "en" | "ur";
 
@@ -38,6 +38,7 @@ export interface ContentItem {
   event_start?: string | null; event_end?: string | null; event_zone?: string; event_status?: string;
   event_venue?: string; event_url?: string; registration_url?: string;
   authors?: string; abstract?: string; keywords?: string; references?: string; issue?: string; epigraph?: string;
+  download_url?:string; download_ur_url?:string; cover_alt?:string; cover_width?:number; cover_height?:number;
   document_url?: string; document_ur_url?: string; seo_title?: string; seo_description?: string;
   contents?: {id:string;text:string}[]; contents_ur?: {id:string;text:string}[];
   gallery?: {url:string;alt:string;caption:string;caption_ur:string}[];
@@ -87,7 +88,7 @@ export interface TickerItem {
 
 // The four type labels the public UI actually filters/displays by.
 // "page" content (About, static pages) is excluded from feeds/archives.
-export const PUBLIC_TYPES: ContentType[] = ["activity", "event", "news_publication", "publication"];
+export const PUBLIC_TYPES: ContentType[] = ["event", "news_publication", "publication"];
 
 export const TYPE_LABEL: Record<ContentType, { en: string; ur: string }> = {
   article: { en: "Article", ur: "مضمون" },

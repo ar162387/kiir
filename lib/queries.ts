@@ -36,7 +36,7 @@ const PUBLICATION_KIND_BY_SLUG: Record<string, string> = {
 const getSettings=cache(async()=>{
  const c=getSupabaseConfig();if(!c)return null;
  const client=createClient(c.url,c.key,{auth:{persistSession:false,autoRefreshToken:false}});
- const {data,error}=await client.from('site_settings').select('key,value').limit(5);
+ const {data,error}=await client.from('site_settings').select('key,value').limit(8);
  if(error)throw Error('Website settings are temporarily unavailable.');
  return Object.fromEntries(data.map(row=>[row.key,row.value]));
 });
@@ -109,7 +109,7 @@ async function catalog(opts:CatalogOptions={}){
  const items=data.map(row=>publicContent({...row,excerpt:row.short_description,excerpt_ur:row.short_description_ur} as unknown as ContentDraft,row.slug,row.published_at,row.categories));
  return {items,total:count??0,page,pageCount:Math.max(1,Math.ceil((count??0)/pageSize))};
 }
-const getAllItems=cache(async ():Promise<ContentItem[]>=>SEED_ITEMS.map(item=>({...item,categories:item.categories.map(slug=>LEGACY_PROGRAM_MAP[slug]??slug)})));
+const getAllItems=cache(async ():Promise<ContentItem[]>=>SEED_ITEMS.map(item=>({...item,type:item.type==='activity'?'event' as const:item.type,categories:item.categories.map(slug=>LEGACY_PROGRAM_MAP[slug]??slug)})));
 function matchesType(item:ContentItem,type:ContentType){return type==='activity'?(item.is_activity??item.type==='activity'):type==='event'?(item.is_event??item.type==='event'):['publication','news_publication'].includes(type)?Boolean(item.publication_kind)||['publication','news_publication'].includes(item.type):item.type===type;}
 
 export async function getFeaturedItems(limit = 5): Promise<ContentItem[]> {
@@ -187,13 +187,12 @@ export async function getItemsByType(
 
 export async function getProgramStats(
   slug: string
-): Promise<{ total: number; activity: number; event: number; publication: number }> {
-  if(publicClient()){const [total,activity,event,publication]=await Promise.all([catalog({category:slug,pageSize:1}),catalog({category:slug,types:['activity'],pageSize:1}),catalog({category:slug,types:['event'],pageSize:1}),catalog({category:slug,types:['publication'],pageSize:1})]);return {total:total.total,activity:activity.total,event:event.total,publication:publication.total};}
+): Promise<{ total: number; event: number; publication: number }> {
+  if(publicClient()){const [total,event,publication]=await Promise.all([catalog({category:slug,pageSize:1}),catalog({category:slug,types:['event'],pageSize:1}),catalog({category:slug,types:['publication'],pageSize:1})]);return {total:total.total,event:event.total,publication:publication.total};}
   const items = await getAllItems();
   const tagged = items.filter((i) => i.categories.includes(slug));
   return {
     total: tagged.length,
-    activity: tagged.filter((i) => matchesType(i,"activity")).length,
     event: tagged.filter((i) => matchesType(i,"event")).length,
     publication: tagged.filter((i) => matchesType(i,"publication")).length,
   };
@@ -224,4 +223,8 @@ export async function getProgramCounts(): Promise<Record<string, number>> {
     for (const cat of item.categories) counts[cat] = (counts[cat] ?? 0) + 1;
   }
   return counts;
+}
+
+export async function getPageHero(page:'events'|'publications'|'about'){
+ return (await getSettings())?.['hero_'+page] as import('./cms/page-hero').PageHero|undefined;
 }

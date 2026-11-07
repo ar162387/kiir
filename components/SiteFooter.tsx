@@ -54,9 +54,6 @@ export default function SiteFooter({
             <Link href="/about" className="text-[#B9C7D6] hover:text-white">
               {t.about}
             </Link>
-            <Link href="/activities" className="text-[#B9C7D6] hover:text-white">
-              {t.activitiesNav}
-            </Link>
             <Link href="/events" className="text-[#B9C7D6] hover:text-white">
               {t.eventsNav}
             </Link>

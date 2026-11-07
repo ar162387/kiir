@@ -16,10 +16,10 @@ export function signCloudinary(parameters: Record<string,string|number|boolean>)
   return createHash('sha1').update(Object.keys(parameters).sort().map(key=>`${key}=${parameters[key]}`).join('&')+secret).digest('hex');
 }
 
-export async function getCloudinaryAsset(publicId:string,resourceType:'image'|'raw') {
+export async function getCloudinaryAsset(publicId:string,resourceType:'image'|'raw'|'video') {
   const config = cloudinaryConfig();
   if (!publicId.startsWith(config.prefix)) throw new Error('Image is outside the managed folder.');
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${config.cloud}/resources/${resourceType}/upload/${encodeURIComponent(publicId)}`, {
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${config.cloud}/resources/${resourceType}/upload/${encodeURIComponent(publicId)}${resourceType==='video'?'?media_metadata=true':''}`, {
     headers: { Authorization: 'Basic '+Buffer.from(`${config.key}:${config.secret}`).toString('base64') },
     cache: 'no-store', signal: AbortSignal.timeout(15000),
   });

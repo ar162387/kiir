@@ -3,15 +3,14 @@ import FieldText from "@/components/FieldText";
 
 import Link from "@/components/LocalizedLink";
 import { useLanguage } from "@/components/LanguageProvider";
-import Thumb from "@/components/Thumb";
+import ContentMoodboard from "@/components/ContentMoodboard";
 import { ArrowLeft, ArrowRight } from "@/components/icons";
-import { formatDate } from "@/lib/format";
 import { TYPE_LABEL } from "@/lib/types";
 import type { ContentItem, ContentType, Program } from "@/lib/types";
 
 type TypeFilter = ContentType | "all";
 
-const FILTERS: TypeFilter[] = ["all", "activity", "event", "news_publication"];
+const FILTERS: TypeFilter[] = ["all", "event", "news_publication"];
 
 export default function ProgramClient({
   program,
@@ -28,7 +27,7 @@ export default function ProgramClient({
   page: number;
   pageCount: number;
   typeFilter: TypeFilter;
-  stats: { total: number; activity: number; event: number; publication: number };
+  stats: { total: number; event: number; publication: number };
 }) {
   const { t, isUr } = useLanguage();
 
@@ -78,7 +77,6 @@ export default function ProgramClient({
           </div>
           <div className="mt-7.5 flex flex-wrap gap-7 border-t border-white/15 pt-4.5 font-mono text-[11px] uppercase tracking-[0.1em] text-[#8FA3B8]">
             <span>{stats.total} {t.tagged}</span>
-            <span>{stats.activity} {t.activities}</span>
             <span>{stats.event} {t.events}</span>
             <span>{stats.publication} {t.publications}</span>
           </div>
@@ -108,32 +106,7 @@ export default function ProgramClient({
         {items.length === 0 ? (
           <p className="py-16 text-center text-sm text-muted">—</p>
         ) : (
-          <div className="grid grid-cols-1 gap-6.5 pt-7 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((it) => (
-              <Link
-                key={it.slug}
-                href={`/articles/${it.slug}`}
-                className="group flex flex-col border border-line bg-surface transition-all duration-200 hover:-translate-y-1 hover:border-cyan hover:shadow-[0_14px_30px_-20px_rgba(16,36,59,0.5)]"
-              >
-                <Thumb src={it.thumbnail_url} alt="" heightClass="h-37.5" />
-                <span className="block px-4.5 pb-5 pt-4">
-                  <span className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-teal">
-                      {isUr ? TYPE_LABEL[it.type].ur : TYPE_LABEL[it.type].en}
-                    </span>
-                    <span className="block h-[3px] w-[3px] bg-cyan" />
-                    <span className="font-mono text-[9.5px] text-muted">{formatDate(it.item_date, isUr ? "ur" : "en")}</span>
-                  </span>
-                  <span className={isUr ? "mt-2 block font-urdu text-[17px] leading-[2.1] text-navy" : "mt-2 block font-serif text-[19px] leading-[1.25] text-navy"}>
-                    <FieldText en={it.title} ur={it.title_ur} serif/>
-                  </span>
-                  <span className={isUr ? "mt-2 block font-urdu text-[13px] leading-[2.2] text-slate" : "mt-2 block text-[13.5px] leading-relaxed text-slate"}>
-                    <FieldText en={it.short_description} ur={it.short_description_ur}/>
-                  </span>
-                </span>
-              </Link>
-            ))}
-          </div>
+          <ContentMoodboard items={items}/>
         )}
 
         {pageCount > 1 && (

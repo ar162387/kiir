@@ -8,7 +8,7 @@ import Superscript from '@tiptap/extension-superscript';
 import Subscript from '@tiptap/extension-subscript';
 import {Node,mergeAttributes} from '@tiptap/core';
 import type {EditorNode} from '@/lib/cms/content-types';
-import {safeLink} from '@/lib/cms/content-types';
+import {normalizeLink} from '@/lib/cms/content-types';
 import {useState,useEffect} from 'react';
 const ManagedImage=Node.create({name:'managedImage',group:'block',atom:true,
  addAttributes(){return {assetId:{default:null},src:{default:''},alt:{default:''},caption:{default:''}};},
@@ -17,9 +17,21 @@ const ManagedImage=Node.create({name:'managedImage',group:'block',atom:true,
 });
 export default function RichTextEditor({value,onChange,label,language='en',images=[],variant=null,assets={}}:{value:EditorNode;onChange:(v:EditorNode)=>void;label:string;language?:'en'|'ur';variant?:string|null;assets?:Record<string,string>;images?:{id:string;url:string;alt:string;caption:string}[]}){
  const [link,setLink]=useState('');const [linkOpen,setLinkOpen]=useState(false);const [linkError,setLinkError]=useState('');
+ const [pasteNotice,setPasteNotice]=useState('');
+ function cleanPastedHtml(html:string){
+  const parsed=new DOMParser().parseFromString(html,'text/html');
+  let removed=false;
+  for(const link of parsed.querySelectorAll('a[href]')){
+   const href=normalizeLink(link.getAttribute('href')??'');
+   if(href)link.setAttribute('href',href);
+   else{link.removeAttribute('href');removed=true;}
+  }
+  setPasteNotice(removed?'Some pasted links could not be used. Their text was kept.':'');
+  return parsed.body.innerHTML;
+ }
  const hydrate=(node:EditorNode):EditorNode=>({...node,...(node.type==='managedImage'?{attrs:{...node.attrs,src:assets[String(node.attrs?.assetId)]??images.find(i=>i.id===node.attrs?.assetId)?.url??''}}:{}),...(node.content?{content:node.content.map(hydrate)}:{})});
- const editor=useEditor({extensions:[StarterKit.configure({heading:{levels:[2,3,4]},codeBlock:false,code:false,link:{openOnClick:false}}),TableKit.configure({table:{resizable:true,cellMinWidth:70}}),TextAlign.configure({types:['heading','paragraph']}),Superscript,Subscript,ManagedImage],
-  content:hydrate(value),immediatelyRender:false,shouldRerenderOnTransaction:true,editorProps:{attributes:{class:`editor-prose ${variant==='research-papers'?'publication-research':variant==='short-stories'?'publication-story':variant==='newsletters'?'publication-newsletter':''}`,role:'textbox','aria-label':label,'aria-multiline':'true',lang:language,dir:language==='ur'?'rtl':'ltr'}},onUpdate:({editor})=>onChange(editor.getJSON() as EditorNode)});
+ const editor=useEditor({extensions:[StarterKit.configure({heading:{levels:[2,3,4]},codeBlock:false,code:false,link:{openOnClick:false,isAllowedUri:url=>normalizeLink(url)===url}}),TableKit.configure({table:{resizable:true,cellMinWidth:70}}),TextAlign.configure({types:['heading','paragraph']}),Superscript,Subscript,ManagedImage],
+  content:hydrate(value),immediatelyRender:false,shouldRerenderOnTransaction:true,editorProps:{transformPastedHTML:cleanPastedHtml,attributes:{class:`editor-prose ${variant==='research-papers'?'publication-research':variant==='short-stories'?'publication-story':variant==='newsletters'?'publication-newsletter':''}`,role:'textbox','aria-label':label,'aria-multiline':'true',lang:language,dir:language==='ur'?'rtl':'ltr'}},onUpdate:({editor})=>onChange(editor.getJSON() as EditorNode)});
  useEffect(()=>{if(!editor)return;const transaction=editor.state.tr;let changed=false;editor.state.doc.descendants((node,pos)=>{if(node.type.name==='managedImage'){const src=assets[String(node.attrs.assetId)]??images.find(i=>i.id===node.attrs.assetId)?.url??'';if(src!==node.attrs.src){transaction.setNodeMarkup(pos,undefined,{...node.attrs,src});changed=true;}}});if(changed)editor.view.dispatch(transaction);},[editor,assets,images]);
  if(!editor)return <p className="cms-help">Loading editor…</p>;
  const icon=(paths:string)=><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths}/></svg>;
@@ -38,7 +50,7 @@ export default function RichTextEditor({value,onChange,label,language='en',image
  Redo:icon('m16 4 5 5-5 5M21 9H11a7 7 0 0 0 0 14'),
  'Clear formatting':icon('M4 4h16M12 4l-4 14M15 15l6 6M21 15l-6 6')};
  const button=(name:string,fn:()=>void,active?:boolean)=><button key={name} type="button" aria-label={name} title={name} aria-pressed={active} onMouseDown={e=>e.preventDefault()} onClick={fn}>{icons[name]??name}</button>;
- return <div className="cms-rich-editor"><div className="cms-editor-toolbar" role="toolbar" aria-label={`${label} formatting`}>
+ return <div className="cms-rich-editor">{pasteNotice&&<p role="status" className="cms-help">{pasteNotice}</p>}<div className="cms-editor-toolbar" role="toolbar" aria-label={`${label} formatting`}>
   <select aria-label="Paragraph style" value={editor.isActive('heading')?String(editor.getAttributes('heading').level):'p'} onChange={e=>e.target.value==='p'?editor.chain().focus().setParagraph().run():editor.chain().focus().toggleHeading({level:Number(e.target.value) as 2|3|4}).run()}><option value="p">Paragraph</option><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="4">Heading 4</option></select>
   {button('Bold',()=>{editor.chain().focus().toggleBold().run();},editor.isActive('bold'))}
   {button('Italic',()=>{editor.chain().focus().toggleItalic().run();},editor.isActive('italic'))}
@@ -56,7 +68,7 @@ export default function RichTextEditor({value,onChange,label,language='en',image
   {button('Undo',()=>{editor.chain().focus().undo().run();})}{button('Redo',()=>{editor.chain().focus().redo().run();})}
   {button('Clear formatting',()=>{editor.chain().focus().unsetAllMarks().clearNodes().run();})}
  </div>
- {linkOpen&&<div className="cms-editor-insert"><label>Link URL<AutoGrowTextarea singleLine value={link} onChange={e=>setLink(e.target.value)} placeholder="https://"/></label><button type="button" onClick={()=>{if(!safeLink(link)){setLinkError('Use a valid HTTP, HTTPS, email or phone link.');return;}editor.chain().focus().extendMarkRange('link').setLink({href:link}).run();setLinkOpen(false);setLinkError('');}}>Apply link</button><button type="button" onClick={()=>{editor.chain().focus().unsetLink().run();setLinkOpen(false);}}>Remove link</button>{linkError&&<p role="alert">{linkError}</p>}</div>}
+ {linkOpen&&<div className="cms-editor-insert"><label>Link URL<AutoGrowTextarea singleLine value={link} onChange={e=>setLink(e.target.value)} placeholder="https://"/></label><button type="button" onClick={()=>{const href=normalizeLink(link);if(!href){setLinkError('Enter a website address such as example.org, an email address, or a phone link.');return;}editor.chain().focus().extendMarkRange('link').setLink({href}).run();setLinkOpen(false);setLinkError('');}}>Apply link</button><button type="button" onClick={()=>{editor.chain().focus().unsetLink().run();setLinkOpen(false);}}>Remove link</button>{linkError&&<p role="alert">{linkError}</p>}</div>}
  {editor.isActive('table')&&<div className="cms-editor-toolbar" role="toolbar" aria-label="Table editing">{button('Add row',()=>{editor.chain().focus().addRowAfter().run();})}{button('Delete row',()=>{editor.chain().focus().deleteRow().run();})}{button('Add column',()=>{editor.chain().focus().addColumnAfter().run();})}{button('Delete column',()=>{editor.chain().focus().deleteColumn().run();})}{button('Merge cells',()=>{editor.chain().focus().mergeCells().run();})}{button('Split cell',()=>{editor.chain().focus().splitCell().run();})}{button('Toggle header',()=>{editor.chain().focus().toggleHeaderRow().run();})}{button('Delete table',()=>{editor.chain().focus().deleteTable().run();})}</div>}
  {images.length>0&&<label className="cms-inline-image-label">Insert a gallery image at the cursor<select aria-label="Insert gallery image" value="" onChange={e=>{const image=images.find(i=>i.id===e.target.value);if(image)editor.chain().focus().insertContent({type:'managedImage',attrs:{assetId:image.id,src:image.url,alt:image.alt,caption:image.caption}}).run();}}><option value="">Choose image</option>{images.map((i,n)=><option value={i.id} key={i.id}>{i.alt||i.caption||`Image ${n+1}`}</option>)}</select></label>}
  {editor.isActive('managedImage')&&<div className="cms-editor-insert"><label>Image caption<AutoGrowTextarea singleLine value={editor.getAttributes('managedImage').caption??''} maxLength={1000} onChange={e=>editor.chain().updateAttributes('managedImage',{caption:e.target.value}).run()}/></label><label>Image alt text<AutoGrowTextarea singleLine value={editor.getAttributes('managedImage').alt??''} maxLength={500} onChange={e=>editor.chain().updateAttributes('managedImage',{alt:e.target.value}).run()}/></label></div>}

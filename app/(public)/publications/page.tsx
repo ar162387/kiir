@@ -1,5 +1,6 @@
 import {notFound} from 'next/navigation';
 import {archivePage,paginatedPath,publicationSearch} from '@/lib/seo-content';
+import {getPageHero} from "@/lib/queries";
 import {pageMetadata} from "@/lib/seo";
 import ArchiveClient from "@/components/archives/ArchiveClient";
 import { getItemsByType } from "@/lib/queries";
@@ -13,11 +14,12 @@ export default async function NewsPage({
 }) {
   const sp = await searchParams;
   const page = archivePage(sp.page);
+  const hero=await getPageHero("publications");
   const result = await getItemsByType(["news_publication", "publication"], { kind: sp.kind, date: sp.date, page, pageSize: 9 });
   if(page>result.pageCount)notFound();
 
   return (
-    <ArchiveClient
+    <ArchiveClient hero={hero}
       basePath="/publications"
       titleEn="Publications"
       titleUr="اشاعتیں"

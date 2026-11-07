@@ -9,7 +9,7 @@ import { getItemsByProgram, getProgramBySlug, getProgramStats, getPrograms, getP
 import type { ContentType } from "@/lib/types";
 
 type TypeFilter = ContentType | "all";
-const VALID_TYPES: TypeFilter[] = ["all", "activity", "event", "news_publication"];
+const VALID_TYPES: TypeFilter[] = ["all", "event", "news_publication"];
 
 export async function generateStaticParams() {
   const programs = await getPrograms();

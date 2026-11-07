@@ -171,3 +171,30 @@
 
 /* A fine light edge keeps the blue ribbon distinct on dark brand surfaces. */
 .brand-on-dark { filter: drop-shadow(0 0 1px rgba(255,255,255,.85)); }
+
+.kiir-moodboard { display:grid; grid-template-columns:minmax(0,1fr); column-gap:1rem; row-gap:1rem; padding-top:1.5rem; align-items:start; }
+.kiir-moodboard[data-measured=true] { grid-auto-rows:8px; row-gap:0; }
+.kiir-moodboard-card { display:grid; gap:.55rem; padding:.85rem; background:var(--color-surface); border:1px solid var(--color-line); }
+.kiir-moodboard-card:hover { border-color:var(--color-cyan); }
+.kiir-moodboard-card h2 { margin:0; color:var(--color-navy); font-size:1.25rem; }
+.kiir-moodboard-meta { color:var(--color-teal); font-size:.75rem; }
+.kiir-moodboard-cover { position:relative; }
+.kiir-moodboard-cover img { display:block; width:100%; height:auto; }
+.kiir-download-title { position:absolute; inset:0; display:grid; place-content:center; gap:.4rem; padding:1rem; background:#10243b99; color:white; text-align:center; font-size:clamp(1rem,2vw,1.5rem); }
+.kiir-download-title small { font:inherit; font-size:.75rem; }
+@media(min-width:640px) { .kiir-moodboard { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(min-width:1050px) { .kiir-moodboard { grid-template-columns:repeat(6,minmax(0,1fr)); } .kiir-moodboard>div { grid-column:span 2; } .kiir-moodboard>div.kiir-wide-card { grid-column:span 3; } }
+.kiir-page-hero-image { background-size:cover; background-repeat:no-repeat; color:white; }
+.kiir-page-hero-image :is(h1,p,.text-teal) { color:white; }
+
+.kiir-photo-row { display:flex; align-items:stretch; width:100%; }
+.kiir-photo-row button { min-width:0; overflow:hidden; }
+.kiir-photo-row img { display:block; width:100%; height:auto; }
+.kiir-photo-row button:focus-visible { outline:3px solid var(--color-cyan); outline-offset:-3px; z-index:1; }
+.kiir-album-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr)); align-items:start; gap:1rem; }
+.kiir-album-grid img { width:100%; height:auto; }
+.kiir-photo-dialog { position:fixed; inset:0; margin:auto; max-height:95vh; max-width:95vw; padding:1rem; color:white; background:#10243b; }
+.kiir-photo-dialog::backdrop { background:#0a1426cc; }
+.kiir-photo-dialog img { width:auto; max-width:90vw; height:auto; max-height:78vh; object-fit:contain; }
+.kiir-photo-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:.75rem; margin-top:.75rem; }
+.kiir-photo-controls button { padding:.35rem .7rem; border:1px solid currentColor; }

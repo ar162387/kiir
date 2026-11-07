@@ -1,4 +1,5 @@
 "use client";
+import {contentHref} from "@/lib/content-link";
 import FieldText from "@/components/FieldText";
 
 import Link from "@/components/LocalizedLink";
@@ -80,7 +81,7 @@ export default function HomeClient({
             <div className="relative col-span-full flex min-h-[300px] sm:min-h-[380px] lg:col-span-1 lg:col-start-1 lg:row-span-2">
               <Link
                 key={lead.slug}
-                href={`/articles/${lead.slug}`}
+                href={contentHref(lead,isUr?"ur":"en")}
                 className="relative flex flex-1 overflow-hidden transition-shadow duration-200"
               >
                 {lead.thumbnail_url ? (
@@ -179,7 +180,7 @@ export default function HomeClient({
               {upcoming.length === 0 && <p className="py-3 text-sm text-muted">—</p>}
               {upcoming.map((e) => {
                 const { mon, day } = formatMonthDay(e.event_start??e.item_date);
-                return <Link key={e.slug} href={`/articles/${e.slug}`} className="flex items-start gap-3.5 border-b border-line py-4 transition-colors hover:bg-tint">
+                return <Link key={e.slug} href={contentHref(e,isUr?"ur":"en")} className="flex items-start gap-3.5 border-b border-line py-4 transition-colors hover:bg-tint">
                   <span className="w-11.5 flex-none border border-cyan py-1.5 text-center"><span className="block font-mono text-[9px] uppercase tracking-[0.1em] text-teal">{mon}</span><span className="block font-serif text-[19px] leading-tight text-navy">{day}</span></span>
                   <span className={isUr ? "font-urdu text-[16px] leading-[2] text-navy" : "font-serif text-[17px] leading-tight text-navy"}><FieldText en={e.title} ur={e.title_ur} serif/></span>
                 </Link>;
@@ -204,12 +205,12 @@ export default function HomeClient({
             {shown.map((it) => (
               <Link
                 key={it.slug}
-                href={`/articles/${it.slug}`}
+                href={contentHref(it,isUr?"ur":"en")}
                 className="group flex items-start gap-4 border-t border-line py-5 transition-colors duration-150 hover:bg-tint sm:gap-5"
               >
                 <Thumb
                   src={it.thumbnail_url}
-                  alt=""
+                  alt={it.cover_alt??''}
                   widthClass="w-24 sm:w-50"
                   heightClass="h-16 sm:h-32"
                   fallbackLabel="no thumbnail"
@@ -255,7 +256,7 @@ export default function HomeClient({
               {t.recentPubs}
             </h2>
             {publications.map((p) => (
-              <Link key={p.slug} href={`/articles/${p.slug}`} className="block border-b border-line py-3.5 transition-colors duration-150 hover:bg-tint">
+              <Link key={p.slug} href={contentHref(p,isUr?"ur":"en")} className="block border-b border-line py-3.5 transition-colors duration-150 hover:bg-tint">
                 <span className="block font-mono text-[9.5px] uppercase tracking-[0.1em] text-teal">
                   {pick(...programLabel(programs, p.categories[0]))}
                 </span>

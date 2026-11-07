@@ -20,6 +20,7 @@ export interface MediaImage {
   cloud_name: string;
   version: number;
   original_filename: string;
+  alt_text?: string;
   width: number;
   height: number;
   bytes: number;

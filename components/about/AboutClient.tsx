@@ -1,4 +1,6 @@
 "use client";
+import PageHero from "@/components/PageHero";
+import type {PageHero as Hero} from "@/lib/cms/page-hero";
 import FieldText from "@/components/FieldText";
 
 import Link from "@/components/LocalizedLink";
@@ -7,10 +9,11 @@ import { ArrowRight } from "@/components/icons";
 import type { OrgSettings, Program, AboutSettings } from "@/lib/types";
 
 export default function AboutClient({
-  org,
+  hero,org,
   programs,
   about,
 }: {
+  hero?:Hero;
   org: OrgSettings;
   programs: Program[];
   about: AboutSettings;
@@ -19,7 +22,7 @@ export default function AboutClient({
 
   return (
     <div>
-      <section className="border-b border-line bg-tint">
+      <PageHero hero={hero}>
         <div className="mx-auto max-w-[1520px] px-4 py-11 sm:px-6 sm:py-14">
           <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-teal">{t.about}</div>
           <h1 className={isUr ? "mt-2.5 max-w-[24ch] font-urdu text-[32px] leading-[2] text-navy" : "mt-2.5 max-w-[24ch] font-serif text-[clamp(30px,4vw,46px)] leading-[1.1] tracking-[-0.02em] text-navy"}>
@@ -29,7 +32,7 @@ export default function AboutClient({
             <FieldText en={org.mission} ur={org.mission_ur}/>
           </p>
         </div>
-      </section>
+      </PageHero>
 
       <section className="mx-auto max-w-[1520px] px-4 py-11 sm:px-6">
         <div>

@@ -11,11 +11,11 @@ export async function POST(request:Request) {
   const {member}=await getStaffSession();
   if(!member||member.must_change_password||!hasPermission(member.role,'program.edit')) return json({error:'Sign in with an active staff account to finish uploading.'},403);
   try {
-    if(Number(request.headers.get('content-length')??0)>2048) return json({error:'Invalid image confirmation.'},400);
-    const {id,filename}=await request.json();
-    if(typeof id!=='string'||!/^[\da-f-]{36}$/i.test(id)||typeof filename!=='string'||filename.length>255) return json({error:'Invalid image confirmation.'},400);
+    if(Number(request.headers.get('content-length')??0)>8192) return json({error:'Invalid image confirmation.'},400);
+    const {id,filename,alt=""}=await request.json();
+    if(typeof id!=='string'||!/^[\da-f-]{36}$/i.test(id)||typeof filename!=='string'||filename.length>255||typeof alt!=='string'||alt.length>500) return json({error:'Invalid image confirmation.'},400);
     const admin=createAdminClient();
-    const {data:asset}=await admin.from('media_assets').select('*').eq('id',id).eq('uploaded_by',member.user_id).single();
+    const {data:asset}=await admin.from('media_assets').select('*').eq('id',id).eq('uploaded_by',member.user_id).eq('resource_type','image').single();
     if(asset?.status==='ready') return json({image:asset,url:imageDeliveryUrl(asset)});
     if(!asset||asset.status!=='pending'||Date.now()-Date.parse(asset.created_at)>60*60*1000) return json({error:'This upload expired. Upload the image again.'},409);
     const {data:allowed,error:limitError}=await admin.rpc('cms_consume_rate_limit',{bucket:`finalize:${member.user_id}`,max_attempts:80,window_seconds:3600});
@@ -28,9 +28,9 @@ export async function POST(request:Request) {
       return json({error:'This file could not be accepted as an optimized image.'},400);
     }
     const values={cloudinary_asset_id:image.asset_id,version:image.version,format:image.format,width:image.width,height:image.height,
-      bytes:image.bytes,original_filename:filename,finalized_at:new Date().toISOString(),status:'ready'};
+      bytes:image.bytes,original_filename:filename,alt_text:alt.trim(),finalized_at:new Date().toISOString(),status:'ready'};
     const {data:ready,error}=await admin.from('media_assets').update(values).eq('id',id).eq('status','pending')
-      .select('id,public_id,cloud_name,version,original_filename,width,height,bytes').single();
+      .select('id,public_id,cloud_name,version,original_filename,alt_text,width,height,bytes').single();
     if(error||!ready) return json({error:'Image confirmation could not be saved. Please retry.'},409);
     return json({image:ready,url:imageDeliveryUrl(ready)});
   } catch { return json({error:'The image could not be verified. Please retry; unsaved uploads are cleaned up automatically.'},503); }

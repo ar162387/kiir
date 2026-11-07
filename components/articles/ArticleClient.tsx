@@ -1,4 +1,5 @@
 "use client";
+import {contentHref} from "@/lib/content-link";
 
 import Link from "@/components/LocalizedLink";
 import Image from "next/image";
@@ -58,7 +59,7 @@ export default function ArticleClient({
       <article className="mx-auto max-w-[1520px] px-4 pb-16 pt-5 sm:px-6">
         <Thumb
           src={item.thumbnail_url}
-          alt=""
+          alt={item.cover_alt??''}
           heightClass="h-[clamp(220px,34vw,460px)]"
           sizes="1200px"
         />
@@ -183,12 +184,12 @@ export default function ArticleClient({
                     return (
                       <Link
                         key={r.slug}
-                        href={`/articles/${r.slug}`}
+                        href={contentHref(r,isUr?"ur":"en")}
                         className="group flex gap-3 border-t border-line-soft py-3 first:border-t-0 first:pt-0"
                       >
                         <Thumb
                           src={r.thumbnail_url}
-                          alt=""
+                          alt={r.cover_alt??''}
                           widthClass="w-16"
                           heightClass="h-16"
                           sizes="64px"

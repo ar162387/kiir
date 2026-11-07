@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {renderDocument} from '../lib/cms/content-render.ts';
-import {emptyDraft,validateContent,type EditorNode} from '../lib/cms/content-types.ts';
+import {cleanDocumentLinks,normalizeLink,emptyDraft,validateContent,type EditorNode} from '../lib/cms/content-types.ts';
 const text=(text:string,marks?:EditorNode['marks']):EditorNode=>({type:'text',text,marks});
 test('every exposed text mark, alignment and structural block survives the shared renderer',()=>{
  const html=renderDocument({type:'doc',content:[{type:'heading',attrs:{level:2,textAlign:'center'},content:[text('Section')]},{type:'paragraph',content:[text('<script>',[{type:'bold'},{type:'italic'},{type:'underline'},{type:'strike'},{type:'superscript'},{type:'subscript'}]),text('Source',[{type:'link',attrs:{href:'https://example.com/?a=1&b=2'}}])]}, {type:'bulletList',content:[{type:'listItem',content:[{type:'paragraph',content:[text('Bullet')]}]}]},{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:[{type:'paragraph',content:[text('Numbered')]}]}]},{type:'blockquote',content:[{type:'paragraph',content:[text('Quote')]}]},{type:'horizontalRule'},{type:'table',content:[{type:'tableRow',content:[{type:'tableHeader',attrs:{colspan:2},content:[{type:'paragraph',content:[text('Header')]}]}]}]}]});
@@ -10,3 +10,28 @@ test('every exposed text mark, alignment and structural block survives the share
 test('unsafe links and unsupported blocks are rejected instead of silently losing formatting',()=>{assert.throws(()=>renderDocument({type:'doc',content:[{type:'paragraph',content:[text('bad',[{type:'link',attrs:{href:'javascript:alert(1)'}}])]}]}));assert.throws(()=>renderDocument({type:'video'}));});
 test('figures resolve only authoritative registered asset URLs',()=>{const id='4c2454e2-7eae-4536-942f-d1cd56849e83';const doc:EditorNode={type:'doc',content:[{type:'managedImage',attrs:{assetId:id,src:'javascript:alert(1)',alt:'Safe " alt',caption:'A caption'}}]};assert.throws(()=>renderDocument(doc),/publication image is unavailable/);const html=renderDocument(doc,{[id]:'https://res.cloudinary.com/test/image/upload/example'});assert.ok(html.includes('<figcaption>A caption</figcaption>'));assert.ok(!html.includes('javascript'));});
 test('publish validation enforces template fields while incomplete details remain saveable drafts',()=>{for(const kind of ['opinion-articles','research-papers','short-stories','newsletters'] as const){const d={...emptyDraft(),title:'A title',slug:'a-title',publication_kind:kind};assert.equal(validateContent(d,false),null);assert.ok(validateContent(d,true));d.excerpt='Summary';d.body={type:'doc',content:[{type:'paragraph',content:[text('Body')]}]};d.authors='An author';d.abstract='An abstract';d.issue='Issue 1';assert.equal(validateContent(d,true),null);d.ur_ready=true;assert.ok(validateContent(d,true));}});
+
+test('title-only events, PDF publications and summary-free opinions can publish',()=>{
+ const base={...emptyDraft(),title:'Test title',slug:'test-title'};
+ const pdf='4c2454e2-7eae-4536-942f-d1cd56849e83';
+ assert.equal(validateContent({...base,is_event:true},true),null);
+ assert.match(validateContent({...base,is_event:true,event_end:'2026-11-10T12:00Z'},true)??'',/start date/);
+ assert.equal(validateContent({...base,publication_kind:'reports',document_id:pdf},true),null);
+ assert.equal(validateContent({...base,publication_kind:'research-papers',presentation:'pdf',document_id:pdf},true),null);
+ assert.match(validateContent({...base,publication_kind:'reports'},true)??'',/Upload a PDF/);
+ assert.equal(validateContent({...base,publication_kind:'opinion-articles',authors:'Author',body:{type:'doc',content:[{type:'paragraph',content:[text('Article')]}]}},true),null);
+});
+
+test('pasted links normalize valid destinations and keep text from rejected links',()=>{
+ assert.equal(normalizeLink('example.org/source'),'https://example.org/source');
+ assert.equal(normalizeLink('editor@example.org'),'mailto:editor@example.org');
+ assert.equal(normalizeLink('/publications?kind=reports'),'/publications?kind=reports');
+ for(const value of ['javascript:alert(1)','//example.org','/about/../admin','/%61dmin','https://user@example.org'])assert.equal(normalizeLink(value),null);
+ let removed=0;
+ const doc=cleanDocumentLinks({type:'doc',content:[{type:'paragraph',content:[
+  text('Read more',[{type:'link',attrs:{href:'example.org'}}]),
+  text('Keep this',[{type:'link',attrs:{href:'javascript:alert(1)'}}])
+ ]}]},()=>removed++);
+ assert.equal(removed,1);
+ assert.match(renderDocument(doc),/href="https:\/\/example.org".*Keep this/);
+});

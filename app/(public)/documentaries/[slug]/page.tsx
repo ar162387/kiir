@@ -1,0 +1,11 @@
+import {PublicMediaDetail} from '@/components/gallery/PublicMedia';
+import {getMediaBySlug} from '@/lib/cms/media-public';
+import {pageMetadata} from '@/lib/seo';
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){
+ const {slug}=await params;
+ const item=await getMediaBySlug('documentary',slug);
+ return item?pageMetadata('/documentaries/'+slug,item.title,item.title,item.description):{robots:{index:false,follow:false}};
+}
+export default async function Page({params}:{params:Promise<{slug:string}>}){
+ return <PublicMediaDetail kind="documentary" slug={(await params).slug}/>;
+}
